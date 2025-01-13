@@ -1,0 +1,52 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: scase-food
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATA_BASE_PASSWORD_DEVELOPMENT}
+      MYSQL_DATABASE: ${DATA_BASE_NAME_DEVELOPMENT}
+      MYSQL_USER: ${DATA_BASE_USERNAME_DEVELOPMENT}
+      MYSQL_PASSWORD: ${DATA_BASE_PASSWORD_DEVELOPMENT}
+    ports:
+      - "${DATA_BASE_PORT_DEVELOPMENT}:${DATA_BASE_PORT_DEVELOPMENT}"
+    volumes:
+      - mysql-data:/var/lib/mysql
+  nats:
+    image: nats
+    ports:
+      - 4222:4222
+volumes:
+  mysql-data:
+
+
+
+# services:
+#   api_gateway:
+#     build: ./api-gateway
+#     ports:
+#       - "3000:3000"
+#     volumes:
+#       - ./api-gateway/src:/usr/src/app/src
+#     command: npm run start:dev
+#     environment:
+#       - PORT=3000
+#   user-microservice:
+#     build: ./user-microservice
+#     volumes:
+#       - ./user-microservice/src:/usr/src/app/src
+#     command: pnpm start:dev
+#   order-microservice:
+#     build: ./order-microservice
+#     volumes:
+#       - ./order-microservice/src:/usr/src/app/src
+#     command: pnpm start:dev
+#   restaurant-microservice:
+#     build: ./restaurant-microservice
+#     volumes:
+#       - ./restaurant-microservice/src:/usr/src/app/src
+#     command: pnpm start:dev
+#   notification-microservice:
+#     build: ./notification-microservice
+#     volumes:
+#       - ./notification-microservice/src:/usr/src/app/src
+#     command: pnpm start:dev
