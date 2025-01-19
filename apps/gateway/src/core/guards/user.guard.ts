@@ -5,6 +5,9 @@ import { CanActivate, ExecutionContext, Injectable, BadRequestException, Inject,
 import { InjectModel } from '@nestjs/sequelize';
 import { Observable } from 'rxjs';
 
+/**
+ * Use this guard to prevent other users from editing non-own orders.
+ */
 @Injectable()
 export class ContributorApi implements CanActivate {
   constructor(
@@ -15,7 +18,7 @@ export class ContributorApi implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const curUser = request.user;
-    const orderId = request.params.orderId;
+    const orderId = request.params.orderId || request.body.orderId;
 
     const order: Order = await this.dataBaseService.findByPkOrThrow(this.OrderModel, orderId);
 
@@ -27,12 +30,15 @@ export class ContributorApi implements CanActivate {
   }
 }
 
+/**
+ * Use this guard to prevent yourself to do some action on yourself.
+ */
 @Injectable()
 export class NotMeApi implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const curUser = request.user;
-    const userId = request.params.userId;
+    const userId = request.params.userId || request.body.userId;
 
     if (curUser.id === userId) {
       throw new BadRequestException("You can't do this action on yourself");
@@ -42,6 +48,9 @@ export class NotMeApi implements CanActivate {
   }
 }
 
+/**
+ * Use this gaurd to check if the contribution still on-goning.
+ */
 @Injectable()
 export class StillOnGoingGuard implements CanActivate {
   constructor(
@@ -67,6 +76,9 @@ export class StillOnGoingGuard implements CanActivate {
   }
 }
 
+/**
+ * Use this gaurd to check if the user is the own of the order.
+ */
 @Injectable()
 export class UserOrderGuard implements CanActivate {
   constructor(

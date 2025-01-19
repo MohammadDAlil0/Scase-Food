@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Inject, Param, Post, Put } from '@nestjs/common';
 import { ChangeRoleDecorator, ChangeStatusDecorator, ChangeStatusOfOrder, CraeteOrderDecorator, GetAllActiveContributors, GetAllUsersDecorator, GetMyOrders, GetTopContributors, LoginDecorators, SignupDecorators, SubmitOrderDecorator } from './decorators/user-appliers.decorator';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { GetUser } from './decorators/get-user.decortator';
 import { User } from '@app/common/models';
 import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto } from '@app/common/dto/userDtos';
+import { lastValueFrom } from 'rxjs';
 
 @Controller('user')
 export class UserController {
@@ -15,9 +16,14 @@ export class UserController {
     @SignupDecorators()
     async signup(@Body() createUserDto: CreateUserDto) {
         try {
-            return await this.natsClient.send({ cmd: 'signup' }, createUserDto).toPromise(); 
-        } catch(error) {
-            return error;
+            const result = await lastValueFrom(
+                this.natsClient.send({ cmd: 'signup' }, createUserDto),
+            );
+        
+            // Return the response directly (even if it contains an error structure)
+            return result;
+        } catch(erorr) {
+            return erorr;
         }
     }
 

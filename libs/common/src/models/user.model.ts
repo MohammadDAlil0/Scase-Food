@@ -1,4 +1,4 @@
-import { AllowNull, BeforeCreate, BelongsTo, Column, DataType, Default, ForeignKey, IsEmail, IsNumeric, Length, NotEmpty, Table, Unique } from "sequelize-typescript";
+import { AllowNull, BeforeCreate, BelongsTo, Column, DataType, Default, ForeignKey, Index, IsEmail, IsNumeric, Length, NotEmpty, Table, Unique } from "sequelize-typescript";
 import * as argon from 'argon2';
 import { BadRequestException } from "@nestjs/common";
 import { BaseModel } from "./base.model";
@@ -7,25 +7,16 @@ import { Role, Status } from "../constants";
 @Table({
     tableName: 'user_table',
     timestamps: true,
-    indexes: [
-        {
-            fields: ['id'],
-            name: 'userId_index'
-        },
-        {
-            fields: ['email'],
-            name: 'email_index'
-        }
-    ]
 })
 export class User extends BaseModel {
     @NotEmpty({
-        msg: 'Username must be empty'
+        msg: 'Username must not be empty'
     })
     @Length({max: 64})
     @Column(DataType.STRING)
     username: string;
 
+    @Index
     @Unique(true)
     @Length({max: 64})
     @Column(DataType.STRING)

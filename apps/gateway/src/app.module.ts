@@ -11,12 +11,12 @@ import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     UserModule,
-    DatabaseModule,
-    ConfigModule.forRoot({ isGlobal: true }),
     FoodModule,
     RestaurantModule,
     NotificationModule,
-    ThrottlerModule.forRoot([{
+    DatabaseModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([{  // Limiting the number of request per hours.
       ttl: 60000,
       limit: 10,
     }]),

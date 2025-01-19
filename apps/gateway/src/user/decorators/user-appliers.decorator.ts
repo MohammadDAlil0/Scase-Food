@@ -1,21 +1,29 @@
-import { applyDecorators, Delete, Get, HttpCode, HttpStatus, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { ContributorApi, JwtGuard, NotMeApi, RolesGuard, StillOnGoingGuard, UserOrderGuard } from '../../core/guards';
-import { Roles } from './roles.decorator';
+import { applyDecorators, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Role } from '@app/common/constants';
+import { JwtGuard, RolesGuard, NotMeApi, StillOnGoingGuard, UserOrderGuard, ContributorApi } from '../../core/guards';
+import { Roles } from './roles.decorator';
 
+/**
+ * Swagger Decorators.
+ * @returns A set of decorators
+ */
 export function SignupDecorators() {
   return applyDecorators(
     ApiOperation({ summary: 'Signup A User' }),
-    ApiResponse({ status: 201, description: 'You will get a user with an access-token' }),
+    ApiResponse({ status: HttpStatus.CREATED, description: 'You will get a user with an access-token' }),
   );
 }
 
+/**
+ * Swagger, and HttpCode Decorators.
+ * @returns A set of decorators
+ */
 export function LoginDecorators() {
     return applyDecorators(
         ApiOperation({ summary: 'Login A User' }),
-        ApiResponse({ status: 200, description: 'You will get a user with an access-token' }),
-        HttpCode(200)
+        ApiResponse({ status: HttpStatus.OK, description: 'You will get a user with an access-token' }),
+        HttpCode(HttpStatus.OK)
     );
 }
 

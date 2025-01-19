@@ -4,6 +4,10 @@ import { JwtGuard, RolesGuard, UserOrderGuard } from "../../core/guards";
 import { Roles } from "../../user/decorators/roles.decorator";
 import { Role } from "@app/common/constants";
 
+/**
+ * A Global decorators for all food's routes including Authentication, and Authorization(Admins And Users).
+ * @returns A set of decorators
+ */
 export function FoodGlobalDecorator() {
     return applyDecorators(
         ApiBearerAuth(),
@@ -12,6 +16,10 @@ export function FoodGlobalDecorator() {
     )
 }
 
+/**
+ * 
+ * @returns 
+ */
 export function CreateFoodDecorator() {
     return applyDecorators(
         ApiOperation({ summary: 'Create Food' }),

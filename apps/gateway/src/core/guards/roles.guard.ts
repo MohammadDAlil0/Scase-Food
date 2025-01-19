@@ -3,6 +3,9 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 
+/**
+ * Use this Guard to Authorized if a user has a permission to get in.
+ */
 @Injectable()
 export class RolesGuard implements CanActivate {
     constructor(private readonly reflector: Reflector) {}
@@ -17,6 +20,7 @@ export class RolesGuard implements CanActivate {
         }
         const request = context.switchToHttp().getRequest();
     
+        // Check if the user is authenicated
         if (!request.user) {
           throw new UnauthorizedException('User Id not found');
         }

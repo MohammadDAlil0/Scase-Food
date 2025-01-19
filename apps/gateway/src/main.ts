@@ -10,10 +10,12 @@ async function bootstrap() {
   // Security Midllewares
   app.use(helmet());
 
+  // Set A Global Validator
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true
   }));
 
+  // Set Up Configuration For Swagger
   const config = new DocumentBuilder()
   .addBearerAuth()
   .setTitle('Exam Manager')
@@ -26,6 +28,7 @@ async function bootstrap() {
   });
   SwaggerModule.setup('api', app, documentFactory);
 
+  // Run The Application
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

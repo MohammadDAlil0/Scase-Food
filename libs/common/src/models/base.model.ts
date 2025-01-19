@@ -6,10 +6,12 @@ import {
     Model,
     Default,
     PrimaryKey,
+    Index,
 } from 'sequelize-typescript';
 import { CreationOptional } from '@sequelize/core';
 
 export class BaseModel extends Model {
+    @Index
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

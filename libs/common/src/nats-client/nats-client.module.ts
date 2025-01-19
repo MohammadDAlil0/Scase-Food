@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
+/**
+ * A message broker to send and receive messages between Gateway and microservices.
+ */
 @Module({
   imports: [
     ClientsModule.register([
