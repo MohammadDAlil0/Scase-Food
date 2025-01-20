@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { badRequestExceptionFilter, httpExceptionFilter } from '@app/common/filters';
+import { RpcResponseInterceptor } from '@app/common/interceptors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,6 +30,8 @@ async function bootstrap() {
   });
   SwaggerModule.setup('api', app, documentFactory);
 
+  app.useGlobalFilters(new httpExceptionFilter, new badRequestExceptionFilter);
+  app.useGlobalInterceptors(new RpcResponseInterceptor);
   // Run The Application
   await app.listen(process.env.PORT ?? 3000);
 }

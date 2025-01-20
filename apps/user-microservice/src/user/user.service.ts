@@ -39,14 +39,17 @@ export class UserService {
             email: loginDto.email
           }
         });
-        
+
+        console.log('Before 2');
         const userMathPassword = await argon.verify(user.hash, loginDto.password);
         
         if (!userMathPassword) {
           throw new BadRequestException('Invalid Password');
         }
         
+        console.log('Before');
         const access_token = await this.getToken(user.id, user.email); 
+        console.log(access_token);
         return {
           ...user.dataValues,
           access_token

@@ -1,5 +1,5 @@
-import { Controller, Inject } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Controller, HttpStatus, Inject } from '@nestjs/common';
+import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { UserService } from './user.service';
 import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, CreateOrderDto } from '@app/common/dto/userDtos';
 
@@ -11,7 +11,7 @@ export class UserController {
 
     @MessagePattern({ cmd: 'signup' })
     async signup(@Payload() data: CreateUserDto) {
-        return this.userService.signup(data);
+        return await this.userService.signup(data);
     }
 
     @MessagePattern({ cmd: 'login' })

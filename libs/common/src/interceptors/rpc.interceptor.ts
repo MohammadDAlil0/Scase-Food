@@ -3,19 +3,21 @@ import { map, Observable } from "rxjs";
 import { GlobalResponse } from "../constants";
 
 @Injectable()
-export class CustomResponseInterceptor implements NestInterceptor {
+export class RpcResponseInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-        const request = context.switchToHttp().getRequest();
-        const response = context.switchToHttp().getResponse();
+        const ctx = context.switchToHttp();
+        const request = ctx.getResponse();
+        const response = ctx.getResponse();
 
         return next.handle().pipe(
             map(data => {
-                console.log('asdfas')
+                console.log(data);
+                response.statusCode = data.statusCode || response.statusCode; 
                 return GlobalResponse({
                     path: request.url,
-                    data,
+                    data: (data.statusCode >= 400 ? null : data),
                     statusCode: response.statusCode,
-                    messages: ['Success'],
+                    messages: data.messages || ['Success'],
                 })
             })
         );

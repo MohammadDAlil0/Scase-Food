@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Inject, Param, Post, Put } from '@nestjs/common';
 import { ChangeRoleDecorator, ChangeStatusDecorator, ChangeStatusOfOrder, CraeteOrderDecorator, GetAllActiveContributors, GetAllUsersDecorator, GetMyOrders, GetTopContributors, LoginDecorators, SignupDecorators, SubmitOrderDecorator } from './decorators/user-appliers.decorator';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { GetUser } from './decorators/get-user.decortator';
 import { User } from '@app/common/models';
 import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto } from '@app/common/dto/userDtos';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom, last, lastValueFrom } from 'rxjs';
 
 @Controller('user')
 export class UserController {
@@ -15,35 +15,28 @@ export class UserController {
     @Post('signup')
     @SignupDecorators()
     async signup(@Body() createUserDto: CreateUserDto) {
-        try {
-            const result = await lastValueFrom(
-                this.natsClient.send({ cmd: 'signup' }, createUserDto),
-            );
-        
-            // Return the response directly (even if it contains an error structure)
-            return result;
-        } catch(erorr) {
-            return erorr;
-        }
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'signup' }, createUserDto),
+        );
     }
 
     @Post('login')
     @LoginDecorators()
     async login(@Body() loginDto: LoginDto) {
-        try {
-            return await this.natsClient.send({ cmd: 'login' }, loginDto).toPromise();
-        } catch(error) {
-            return error;
-        }
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'login' }, loginDto),
+        );
     }
 
     @Get('getAllUsers')
     @GetAllUsersDecorator()
     async getAllUsers() {
         try {
-            return await this.natsClient.send({ cmd: 'GetAllUsers' }, {}).toPromise();
+            return await lastValueFrom(
+                this.natsClient.send({ cmd: 'GetAllUsers' }, {})
+            )
         } catch(error) {
-            return error;
+            return error.error;
         }
     }
 
@@ -56,7 +49,7 @@ export class UserController {
                 ...dto
             }).toPromise();
         } catch (error) {
-            return error;
+            return error.error;
         }
     }
 

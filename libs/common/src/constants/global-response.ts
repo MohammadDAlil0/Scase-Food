@@ -6,5 +6,5 @@ export const GlobalResponse = (options: {
 }) => (
     process.env.NODE_ENV === 'DEVELOPMENT' ? 
     { ...options, timestamp: Date.now() } : 
-    { statusCode: options.statusCode, messages: options.messages }
+    { statusCode: options.statusCode, data: options.data, messages: options.messages }
 );
