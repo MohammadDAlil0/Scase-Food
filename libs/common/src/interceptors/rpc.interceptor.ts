@@ -11,10 +11,9 @@ export class RpcResponseInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             map(data => {
-                console.log(data);
                 response.statusCode = data.statusCode || response.statusCode; 
                 return GlobalResponse({
-                    path: request.url,
+                    path: request.url || data.path  ,
                     data: (data.statusCode >= 400 ? null : data),
                     statusCode: response.statusCode,
                     messages: data.messages || ['Success'],

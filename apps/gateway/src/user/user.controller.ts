@@ -1,10 +1,11 @@
-import { Body, Controller, Get, HttpException, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Inject, Param, Post, Put, Query, ValidationPipe } from '@nestjs/common';
 import { ChangeRoleDecorator, ChangeStatusDecorator, ChangeStatusOfOrder, CraeteOrderDecorator, GetAllActiveContributors, GetAllUsersDecorator, GetMyOrders, GetTopContributors, LoginDecorators, SignupDecorators, SubmitOrderDecorator } from './decorators/user-appliers.decorator';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { GetUser } from './decorators/get-user.decortator';
 import { User } from '@app/common/models';
 import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto } from '@app/common/dto/userDtos';
-import { firstValueFrom, last, lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 
 @Controller('user')
 export class UserController {
@@ -30,27 +31,18 @@ export class UserController {
 
     @Get('getAllUsers')
     @GetAllUsersDecorator()
-    async getAllUsers() {
-        try {
-            return await lastValueFrom(
-                this.natsClient.send({ cmd: 'GetAllUsers' }, {})
-            )
-        } catch(error) {
-            return error.error;
-        }
+    async getAllUsers(@Query() filter: FindAllUsersDto) {
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'GetAllUsers' }, filter)
+        )
     }
 
-    @Put('changeRole/:userId')
+    @Put('changeRole')
     @ChangeRoleDecorator()
-    async changeRole(@Param('userId') userId: string, @Body() dto: ChangeRoleDto) {
-        try {
-            return await this.natsClient.send({ cmd: 'changeRole' }, {
-                userId,
-                ...dto
-            }).toPromise();
-        } catch (error) {
-            return error.error;
-        }
+    async changeRole(@Body() changeRoleDto: ChangeRoleDto) {
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'changeRole' }, changeRoleDto)
+        )
     }
 
     @Put('changeStatus')

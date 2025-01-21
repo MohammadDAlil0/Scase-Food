@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { SequelizeExceptionFilter, badRequestExceptionFilter, httpExceptionFilter, testException } from '@app/common/filters';
+import { MicroserviceExceptionFilter } from '@app/common/filters';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
@@ -11,7 +11,7 @@ async function bootstrap() {
     }
   });
 
-  app.useGlobalFilters(new SequelizeExceptionFilter);
+  app.useGlobalFilters(new MicroserviceExceptionFilter);
 
   await app.listen();
 }

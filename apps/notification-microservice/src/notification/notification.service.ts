@@ -31,7 +31,6 @@ export class NotificationService {
       },
       attributes: ['id']
     });
-    console.log(createUsersNotificationsDto.description);
     adminsIds.forEach(user => {
       this.create({
         userId: user.id,

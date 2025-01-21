@@ -5,7 +5,7 @@ import { JwtGuard, RolesGuard, NotMeApi, StillOnGoingGuard, UserOrderGuard, Cont
 import { Roles } from './roles.decorator';
 
 /**
- * Swagger Decorators.
+ * @Decorators [ApiOperation, ApiResponse]
  * @returns A set of decorators
  */
 export function SignupDecorators() {
@@ -16,7 +16,7 @@ export function SignupDecorators() {
 }
 
 /**
- * Swagger, and HttpCode Decorators.
+ * @Decorators [ApiOperation, ApiResponse, HttpCode]
  * @returns A set of decorators
  */
 export function LoginDecorators() {
@@ -27,26 +27,38 @@ export function LoginDecorators() {
     );
 }
 
+/**
+ * @Decorators [ApiOperation, ApiResponse, ApiBearerAuth, UseGuards(JwtGuard, RolesGuard), Roles(Role.ADMIN)]
+ * @returns A set of decorators
+ */
 export function GetAllUsersDecorator() {
   return applyDecorators(
     ApiOperation({ summary: "Get All Users" }),
-    ApiResponse({ status: 200, description: 'You will get the all Users' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will get a set of users' }),
     ApiBearerAuth(),
     UseGuards(JwtGuard, RolesGuard),
     Roles(Role.ADMIN),
   )
 }
 
+/**
+ * @Decorators [ApiOperation, ApiResponse, ApiBearerAuth, UseGuards(JwtGuard, RolesGuard, NotMeApi), Roles(Role.ADMIN)]
+ * @returns A set of decorators
+ */
 export function ChangeRoleDecorator() {
     return applyDecorators(
       ApiOperation({ summary: "Change A User's Role" }),
-      ApiResponse({ status: 200, description: 'You will get the updated user' }),
+      ApiResponse({ status: HttpStatus.OK, description: 'You will get the updated user' }),
       ApiBearerAuth(),
       UseGuards(JwtGuard, RolesGuard, NotMeApi),
       Roles(Role.ADMIN),
     );
 }
 
+/**
+ * @Decorators [ApiOperation, ApiResponse, HttpCode]
+ * @returns A set of decorators
+ */
 export function ChangeStatusDecorator() {
   return applyDecorators(
     ApiOperation({ summary: "Change Status To Order" }),
@@ -57,6 +69,10 @@ export function ChangeStatusDecorator() {
   )
 }
 
+/**
+ * @Decorators [ApiOperation, ApiResponse, HttpCode]
+ * @returns A set of decorators
+ */
 export function CraeteOrderDecorator() {
   return applyDecorators(
     ApiOperation({ summary: "Create Order" }),
@@ -67,6 +83,10 @@ export function CraeteOrderDecorator() {
   )
 }
 
+/**
+ * @Decorators [ApiOperation, ApiResponse, HttpCode]
+ * @returns A set of decorators
+ */
 export function SubmitOrderDecorator() {
   return applyDecorators(
       ApiOperation({ summary: 'Submit Order' }),
@@ -77,6 +97,10 @@ export function SubmitOrderDecorator() {
   )
 }
 
+/**
+ * @Decorators [ApiOperation, ApiResponse, HttpCode]
+ * @returns A set of decorators
+ */
 export function GetAllActiveContributors() {
   return applyDecorators(
     ApiOperation({ summary: 'Get All Contributors' }),
@@ -86,6 +110,11 @@ export function GetAllActiveContributors() {
     Roles(Role.ADMIN, Role.USER),
   )
 }
+
+/**
+ * @Decorators [ApiOperation, ApiResponse, HttpCode]
+ * @returns A set of decorators
+ */
 export function ChangeStatusOfOrder() {
   return applyDecorators(
     ApiOperation({ summary: 'Change Status Of Order' }),
@@ -96,6 +125,10 @@ export function ChangeStatusOfOrder() {
   )
 }
 
+/**
+ * @Decorators [ApiOperation, ApiResponse, HttpCode]
+ * @returns A set of decorators
+ */
 export function GetTopContributors() {
   return applyDecorators(
     ApiOperation({ summary: 'Get Top Contributors' }),
@@ -106,6 +139,10 @@ export function GetTopContributors() {
   )
 }
 
+/**
+ * @Decorators [ApiOperation, ApiResponse, HttpCode]
+ * @returns A set of decorators
+ */
 export function GetMyOrders() {
   return applyDecorators(
     ApiOperation({ summary: 'Get My Orders' }),

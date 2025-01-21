@@ -2,6 +2,7 @@ import { Controller, HttpStatus, Inject } from '@nestjs/common';
 import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { UserService } from './user.service';
 import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, CreateOrderDto } from '@app/common/dto/userDtos';
+import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 
 @Controller('user')
 export class UserController {
@@ -10,8 +11,8 @@ export class UserController {
     ) {}
 
     @MessagePattern({ cmd: 'signup' })
-    async signup(@Payload() data: CreateUserDto) {
-        return await this.userService.signup(data);
+    async signup(@Payload() createUserDto: CreateUserDto) {
+        return await this.userService.signup(createUserDto);
     }
 
     @MessagePattern({ cmd: 'login' })
@@ -20,8 +21,8 @@ export class UserController {
     }
 
     @MessagePattern({ cmd: 'GetAllUsers' })
-    async getAllUsers() {
-        return this.userService.getAllUsers();
+    async getAllUsers(@Payload() filter: FindAllUsersDto) {
+        return this.userService.getAllUsers(filter);
     }
 
     @MessagePattern({ cmd: 'changeRole' })
@@ -62,7 +63,6 @@ export class UserController {
 
     @MessagePattern({ cmd: 'getMyOrders' })
     getMyOrders(@Payload() userId: string) {
-        console.log(userId);
         return this.userService.getMyOrders(userId);
     }
 }

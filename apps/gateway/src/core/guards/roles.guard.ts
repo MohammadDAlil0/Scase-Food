@@ -4,7 +4,7 @@ import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 
 /**
- * Use this Guard to Authorized if a user has a permission to get in.
+ * Use this Guard to Authorize if a user has a permission to get in.
  */
 @Injectable()
 export class RolesGuard implements CanActivate {

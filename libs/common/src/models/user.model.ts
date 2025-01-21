@@ -1,13 +1,15 @@
-import { AfterCreate, AfterFind, AllowNull, BeforeCreate, BelongsTo, Column, DataType, Default, ForeignKey, Index, IsEmail, IsNumeric, Length, NotEmpty, Table, Unique } from "sequelize-typescript";
+import { AfterCreate, AfterFind, AllowNull, BeforeCreate, Column, DataType, Default, Index, Length, NotEmpty, Table, Unique } from "sequelize-typescript";
 import * as argon from 'argon2';
 import { BadRequestException } from "@nestjs/common";
 import { BaseModel } from "./base.model";
 import { Role, Status } from "../constants";
-import { Exclude } from "class-transformer";
 
 @Table({
     tableName: 'user_table',
     timestamps: true,
+    defaultScope: {
+        attributes: { exclude: ['hash', 'passwordChangedAt', 'passwordResetToken', 'passwordResetToken'] },
+    },
 })
 export class User extends BaseModel {
     @NotEmpty({
@@ -57,22 +59,6 @@ export class User extends BaseModel {
             instance.hash = await argon.hash(instance.hash);
         } else {
             throw new BadRequestException('Please provide a password when you are creating a user');
-        }
-    }
-
-    @AfterCreate
-    static async excludeFields(instance: User) {
-        instance.hash = undefined;
-    }
-
-    @AfterFind
-    static excludeHashAfterFind(result: any) {
-        if (Array.isArray(result)) {
-        result.forEach((instance: User) => {
-            if (instance) instance.hash = instance.passwordChangedAt = instance.passwordResetToken = instance.passwordResetExpires = undefined;
-        });
-        } else if (result) {
-            result.hash = result.passwordChangedAt = result.passwordResetToken = result.passwordResetExpires = undefined;
         }
     }
 }

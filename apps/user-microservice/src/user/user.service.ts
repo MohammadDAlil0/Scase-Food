@@ -8,6 +8,7 @@ import { Status, StatusOfOrder } from '@app/common/constants';
 import { DataBaseService } from '@app/common/database';
 import { CreateUserDto, LoginDto, ChangeRoleDto, CreateOrderDto, ChangeStatusDto } from '@app/common/dto/userDtos';
 import { User, Order } from '@app/common/models';
+import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 
 @Injectable()
 export class UserService {
@@ -37,27 +38,31 @@ export class UserService {
         const user: User = await this.dataBaseService.findOneOrThrow(this.UserModel, {
           where: {
             email: loginDto.email
-          }
+          },
+          attributes: { include: ['hash'] }
         });
 
-        console.log('Before 2');
         const userMathPassword = await argon.verify(user.hash, loginDto.password);
         
         if (!userMathPassword) {
           throw new BadRequestException('Invalid Password');
         }
         
-        console.log('Before');
         const access_token = await this.getToken(user.id, user.email); 
-        console.log(access_token);
         return {
           ...user.dataValues,
+          hash: undefined,  // To overide the hash attribute
           access_token
         }
     }
 
-    async getAllUsers() {
-      return await this.UserModel.findAll();
+    async getAllUsers(filter: FindAllUsersDto) {
+      const { page, limit, ...rest } = filter;
+      return await this.UserModel.findAll({
+        where: {...rest},
+        limit: filter.limit,
+        offset: (filter.page - 1) * filter.limit
+      });
     }
 
     async changeRole(dto: ChangeRoleDto) {

@@ -3,6 +3,13 @@ import { Match } from "@app/common/decorators/confim-password.validator.decorato
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
 
+/**
+ * @param username string
+ * @param email string
+ * @param password string
+ * @param confirmPassword string
+ * @param role [ADMIN, USER, GHOST] For Testing
+ */
 export class CreateUserDto {
     @ApiProperty({
         description: 'Username of a user',
