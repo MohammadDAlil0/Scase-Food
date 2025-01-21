@@ -71,6 +71,7 @@ export class StillOnGoingGuard implements CanActivate {
     if (!contributor) {
       throw new ForbiddenException('contributor has already ordered');
     }
+    request.contributor = contributor;
 
     return true;
   }

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nest
 import { AddFoodDecorator, CreateFoodDecorator, DeleteFoodDecorator, DeleteFoodFromOrderDecorator, FindAllFoodDecorator, FindFoodDecorator, FoodGlobalDecorator, UpdateFoodDecorator } from './decorators/food-appliers.decorator';
 import { ClientProxy } from '@nestjs/microservices';
 import { AddFoodDto, CreateFoodDto, UpdateFoodDto } from '@app/common/dto/foodDtos';
+import { lastValueFrom } from 'rxjs';
 
 @Controller('food')
 @FoodGlobalDecorator()
@@ -13,81 +14,62 @@ export class FoodController {
   @Post('addFoodToOrder')
   @AddFoodDecorator()
   async addFood(@Body() addFoodDto: AddFoodDto) {
-    try {
-      return await this.natsClient.send({ cmd: 'addFoodToOrder' }, addFoodDto).toPromise();
-    } catch(error) {
-      return error;
-    }
+    return await lastValueFrom(
+      this.natsClient.send({ cmd: 'addFoodToOrder' }, addFoodDto)
+    );
   }
 
   @Delete('removeFoodFromOrder/:orderId/:id')
   @DeleteFoodFromOrderDecorator()
   async removeFoodFromOrder(@Param('id') id: string) {
-    try {
-      return await this.natsClient.send({ cmd: 'removeFoodFromOrder' }, id).toPromise();
-    }
-    catch(error) {
-      return error;
-    }
+    return await lastValueFrom(
+      this.natsClient.send({ cmd: 'removeFoodFromOrder' }, id)
+    );
   }
+
 
   @Post()
   @CreateFoodDecorator()
   async create(@Body() createFoodDto: CreateFoodDto) {
-    try {
-      return await this.natsClient.send({ cmd: 'createFood' }, createFoodDto).toPromise();
-    }
-    catch(error) {
-      return error;
-    }
+    return await lastValueFrom(
+      this.natsClient.send({ cmd: 'createFood' }, createFoodDto)
+    );
   }
 
   @Get()
   @FindAllFoodDecorator()
   async findAll() {
-    try {
-      return await this.natsClient.send({ cmd: 'findAllFood' }, {}).toPromise();
-    }
-    catch(error) {
-      return error;
-    }
+    return await lastValueFrom(
+      this.natsClient.send({ cmd: 'findAllFood' }, {})
+    );
   }
 
   @Get(':id')
   @FindFoodDecorator()
   async findOne(@Param('id') id: string) {
-    try {
-      return await this.natsClient.send({ cmd: 'findOneFood' }, id).toPromise();
-    }
-    catch(error) {
-      return error;
-    }
+    return await lastValueFrom(
+      this.natsClient.send({ cmd: 'findOneFood' }, id)
+    );
   }
 
   @Patch(':id')
   @UpdateFoodDecorator()
   async update(@Param('id') id: string, @Body() updateFoodDto: UpdateFoodDto) {
-    try {
-      return await this.natsClient.send({ cmd: 'updateFood' }, {
+    return await lastValueFrom(
+      this.natsClient.send({ cmd: 'updateFood'}, {
         id, 
         ...updateFoodDto
-      }).toPromise();
-    }
-    catch(error) {
-      return error;
-    }
+      })
+    );
   }
   
 
   @Delete(':id')
   @DeleteFoodDecorator()
   async remove(@Param('id') id: string) {
-    try {
-      return await this.natsClient.send({ cmd: 'removeFood' }, id).toPromise();
-    }
-    catch(error) {
-      return error;
-    }
+    return await lastValueFrom(
+      this.natsClient.send({ cmd: 'removeFood' }, id)
+    );
   }
 
 }

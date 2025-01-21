@@ -3,6 +3,7 @@ import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { UserService } from './user.service';
 import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, CreateOrderDto } from '@app/common/dto/userDtos';
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
+import { PaginationDto } from '@app/common/dto/globalDtos';
 
 @Controller('user')
 export class UserController {
@@ -47,8 +48,8 @@ export class UserController {
     }
 
     @MessagePattern({ cmd: 'getAllActiveContributors' })
-    getAllActiveContributors() {
-        return this.userService.getAllActiveContributors();
+    getAllActiveContributors(@Payload() filter: PaginationDto) {
+        return this.userService.getAllActiveContributors(filter);
     }
 
     @MessagePattern({ cmd: 'changeStatusOfOrder' })
@@ -57,8 +58,8 @@ export class UserController {
     }
 
     @MessagePattern({ cmd: 'getTopContributors' })
-    getTopContributors() {
-        return this.userService.getTopContributors();
+    getTopContributors(@Payload() filter: PaginationDto) {
+        return this.userService.getTopContributors(filter);
     }
 
     @MessagePattern({ cmd: 'getMyOrders' })

@@ -1,79 +1,138 @@
-import { applyDecorators, HttpCode, HttpStatus, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { JwtGuard, RolesGuard, UserOrderGuard } from "../../core/guards";
-import { Roles } from "../../user/decorators/roles.decorator";
-import { Role } from "@app/common/constants";
+import { applyDecorators, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { JwtGuard, RolesGuard, UserOrderGuard } from '../../core/guards';
+import { Roles } from '../../user/decorators/roles.decorator';
+import { Role } from '@app/common/constants';
 
 /**
- * A Global decorators for all food's routes including Authentication, and Authorization(Admins And Users).
- * @returns A set of decorators
+ * Base decorator for food-related endpoints.
+ * Applies common decorators for authentication, role-based access control, and JWT validation.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiBearerAuth` for JWT authentication.
+ * - `UseGuards(JwtGuard, RolesGuard)` for JWT and role-based access control.
+ * - `Roles(Role.ADMIN, Role.USER)` to restrict access to users with the `ADMIN` or `USER` role.
  */
 export function FoodGlobalDecorator() {
-    return applyDecorators(
-        ApiBearerAuth(),
-        UseGuards(JwtGuard, RolesGuard),        
-        Roles(Role.ADMIN, Role.USER)
-    )
+  return applyDecorators(
+    ApiBearerAuth(),
+    UseGuards(JwtGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.USER),
+  );
 }
 
 /**
- * 
- * @returns 
+ * Decorator for the "Create Food" endpoint.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Create Food".
+ * - `ApiResponse` with a status of `HttpStatus.CREATED` and a description of "You will get the created food".
+ * - `Roles(Role.ADMIN)` to restrict access to users with the `ADMIN` role.
  */
 export function CreateFoodDecorator() {
-    return applyDecorators(
-        ApiOperation({ summary: 'Create Food' }),
-        ApiResponse({ status: HttpStatus.CREATED, description: 'You will the cerated food' }),
-        Roles(Role.ADMIN)
-    )
+  return applyDecorators(
+    ApiOperation({ summary: 'Create Food' }),
+    ApiResponse({ status: HttpStatus.CREATED, description: 'You will get the created food' }),
+    Roles(Role.ADMIN),
+  );
 }
 
+/**
+ * Decorator for the "Get All Foods" endpoint.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Get All Foods".
+ * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will get a list of foods".
+ */
 export function FindAllFoodDecorator() {
-    return applyDecorators(
-        ApiOperation({ summary: 'Get All Foods' }),
-        ApiResponse({ status: HttpStatus.OK, description: 'You will get a list of foods' }),
-    );
+  return applyDecorators(
+    ApiOperation({ summary: 'Get All Foods' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will get a list of foods' }),
+  );
 }
 
+/**
+ * Decorator for the "Get Food" endpoint.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Get Food".
+ * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will get the food".
+ */
 export function FindFoodDecorator() {
-    return applyDecorators(
-        ApiOperation({ summary: 'Get Food'}),
-        ApiResponse({ status: HttpStatus.OK, description: 'You will get food' }),
-    )
+  return applyDecorators(
+    ApiOperation({ summary: 'Get Food' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will get the food' }),
+  );
 }
 
+/**
+ * Decorator for the "Update Food" endpoint.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Update Food".
+ * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will get the updated food".
+ * - `Roles(Role.ADMIN)` to restrict access to users with the `ADMIN` role.
+ */
 export function UpdateFoodDecorator() {
-    return applyDecorators(
-        ApiOperation({ summary: 'Update Food' }),
-        ApiResponse({ status: HttpStatus.OK, description: 'You will the updated food' }),
-        Roles(Role.ADMIN)
-    )
+  return applyDecorators(
+    ApiOperation({ summary: 'Update Food' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will get the updated food' }),
+    Roles(Role.ADMIN),
+  );
 }
 
+/**
+ * Decorator for the "Delete Food" endpoint.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Delete Food".
+ * - `ApiResponse` with a status of `HttpStatus.NO_CONTENT` and a description of "You will get the deleted food".
+ * - `Roles(Role.ADMIN)` to restrict access to users with the `ADMIN` role.
+ * - `HttpCode(HttpStatus.NO_CONTENT)` to set the HTTP status code to 204.
+ */
 export function DeleteFoodDecorator() {
-    return applyDecorators(
-        ApiOperation({ summary: 'Delete Food' }),
-        ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'You will the deleted food' }),
-        Roles(Role.ADMIN),
-        HttpCode(HttpStatus.NO_CONTENT)
-    )
+  return applyDecorators(
+    ApiOperation({ summary: 'Delete Food' }),
+    ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'You will get the deleted food' }),
+    Roles(Role.ADMIN),
+    HttpCode(HttpStatus.NO_CONTENT),
+  );
 }
 
+/**
+ * Decorator for the "Add Food To Order" endpoint.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Add Food To Order".
+ * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will get a message".
+ * - `UseGuards(JwtGuard, RolesGuard, UserOrderGuard)` for JWT, role-based access control, and order validation.
+ * - `Roles(Role.ADMIN, Role.USER)` to restrict access to users with the `ADMIN` or `USER` role.
+ */
 export function AddFoodDecorator() {
-    return applyDecorators(
-        ApiOperation({ summary: 'Add Food To Order' }),
-        ApiResponse({ status: HttpStatus.OK, description: 'You will get a message' }),
-        UseGuards(JwtGuard, RolesGuard, UserOrderGuard),
-        Roles(Role.ADMIN, Role.USER)
-    )
+  return applyDecorators(
+    ApiOperation({ summary: 'Add Food To Order' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will get a message' }),
+    UseGuards(JwtGuard, RolesGuard, UserOrderGuard),
+    Roles(Role.ADMIN, Role.USER),
+  );
 }
 
+/**
+ * Decorator for the "Delete Food From Order" endpoint.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Delete Food From Order".
+ * - `ApiResponse` with a status of `HttpStatus.NO_CONTENT` and a description of "You will get the deleted food from order".
+ * - `UseGuards(JwtGuard, RolesGuard, UserOrderGuard)` for JWT, role-based access control, and order validation.
+ * - `Roles(Role.ADMIN, Role.USER)` to restrict access to users with the `ADMIN` or `USER` role.
+ * - `HttpCode(HttpStatus.NO_CONTENT)` to set the HTTP status code to 204.
+ */
 export function DeleteFoodFromOrderDecorator() {
-    return applyDecorators(
-        ApiOperation({ summary: 'Delete Food From Order' }),
-        ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'You will the deleted food from order' }),
-        UseGuards(JwtGuard, RolesGuard, UserOrderGuard),
-        Roles(Role.ADMIN, Role.USER),
-        HttpCode(HttpStatus.NO_CONTENT)
-    )
+  return applyDecorators(
+    ApiOperation({ summary: 'Delete Food From Order' }),
+    ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'You will get the deleted food from order' }),
+    UseGuards(JwtGuard, RolesGuard, UserOrderGuard),
+    Roles(Role.ADMIN, Role.USER),
+    HttpCode(HttpStatus.NO_CONTENT),
+  );
 }

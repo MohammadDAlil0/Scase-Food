@@ -6,6 +6,8 @@ import { User } from '@app/common/models';
 import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto } from '@app/common/dto/userDtos';
 import { lastValueFrom } from 'rxjs';
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
+import { GetContributor } from './decorators/get-contributor';
+import { PaginationDto } from '@app/common/dto/globalDtos';
 
 @Controller('user')
 export class UserController {
@@ -47,78 +49,64 @@ export class UserController {
 
     @Put('changeStatus')
     @ChangeStatusDecorator()
-    async changeStatus(@GetUser() curUser: User, @Body() changeStatusDto: ChangeStatusDto) {
-        try {
-            return await this.natsClient.send({ cmd: 'changeStatus' }, {
-                curUser,
+    async changeStatus(@GetUser('id') userId: string, @Body() changeStatusDto: ChangeStatusDto) {
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'changeStatus' }, {
+                userId,
                 ...changeStatusDto
-            }).toPromise();
-        } catch(error) {
-            return error;
-        }
+            })
+        );
     }
 
     @Post('createOrder/:contributorId')
     @CraeteOrderDecorator()
-    async createOrder(@Param('contributorId') contributorId: string, @GetUser() curUser: User) {
-        try {
-            return await this.natsClient.send({ cmd: 'createOrder' }, {
-                createdBy: curUser.id,
-                contributorId
-
-            }).toPromise();
-        } catch(error) {
-            return error;
-        }
+    async createOrder(@Param('contributorId') contributorId: string, @GetUser('id') createdBy: string, @GetContributor('numberOfContributions') numberOfContributions: number) {
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'createOrder' }, {
+                createdBy,
+                contributorId,
+                numberOfContributions
+            })
+        );
     }
 
     @Put('submitOrder/:orderId')
     @SubmitOrderDecorator()
     async submitOrder(@Param('orderId') orderId: string) {
-        try {
-            return await this.natsClient.send({ cmd: 'submitOrder' }, orderId).toPromise();
-        } catch(error) {
-            return error;
-        }
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'submitOrder' }, orderId)
+        );
     }
 
     @Get('getAllActiveContributors')
     @GetAllActiveContributors()
-    async getAllActiveContributors() {
-        try {
-            return await this.natsClient.send({ cmd: 'getAllActiveContributors' }, {}).toPromise();
-        } catch(error) {
-            return error;
-        }
+    async getAllActiveContributors(@Query() filter: PaginationDto) {
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'getAllActiveContributors' }, filter)
+        );
     }
 
     @Put('changeStatusOfOrder/:orderId')
     @ChangeStatusOfOrder()
     async changeStatusOfOrder(@Param('orderId') orderId: string) {
-        try {
-            return await this.natsClient.send({ cmd: 'changeStatusOfOrder' }, orderId).toPromise();
-        } catch(error) {
-            return error;
-        }
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'changeStatusOfOrder' }, orderId)
+        );
     }
     
     @Get('GetTopcontributors')
     @GetTopContributors()
-    async getTopContributors() {
-        try {
-            return await this.natsClient.send({ cmd: 'getTopContributors' }, {}).toPromise();
-        } catch(error) {
-            return error;
-        }
+    async getTopContributors(@Query() filter: PaginationDto) {
+        return lastValueFrom(
+            this.natsClient.send({ cmd: 'getTopContributors' }, filter)
+        );
     }
 
     @Get('GetMyOrders')
     @GetMyOrders()
     async getMyOrders(@GetUser() curUser: User) {
-        try {
-            return await this.natsClient.send({ cmd: 'getMyOrders' }, curUser.id).toPromise();
-        } catch(error) {
-            return error;
-        }
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'getMyOrders' }, curUser.id)
+        );
     }
 }

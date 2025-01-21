@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { CreateRestauranDecorator, DeleteRestauranDecorator, FindAllRestaurantDecorator, FindRestaurantDecorator, RestaurantGlobalDecorator, UpdateRestauranDecorator } from './decorators/restaurant-appliers.decorator';
 import { CreateRestaurantDto, UpdateRestaurantDto } from '@app/common/dto/orderDtos';
+import { RestaurantGlobalDecorator, FindAllRestaurantDecorator, FindRestaurantDecorator, UpdateRestaurantDecorator, CreateRestaurantDecorator, DeleteRestaurantDecorator } from './decorators/restaurant-appliers.decorator';
 
 @Controller('restaurant')
 @RestaurantGlobalDecorator()
@@ -11,7 +11,7 @@ export class RestaurantController {
   ) {}
 
   @Post()
-  @CreateRestauranDecorator()
+  @CreateRestaurantDecorator()
   async create(@Body() createRestaurantDto: CreateRestaurantDto) {
     try {
       return await this.natsClient.send({ cmd: 'createRestaurant' }, createRestaurantDto).toPromise();
@@ -44,7 +44,7 @@ export class RestaurantController {
   }
 
   @Patch(':id')
-  @UpdateRestauranDecorator()
+  @UpdateRestaurantDecorator()
   async update(@Param('id') id: string, @Body() updateRestaurantDto: UpdateRestaurantDto) {
     try {
       return await this.natsClient.send({ cmd: 'updateRestaurant' }, {
@@ -58,7 +58,7 @@ export class RestaurantController {
   }
 
   @Delete(':id')
-  @DeleteRestauranDecorator()
+  @DeleteRestaurantDecorator()
   async remove(@Param('id') id: string) {
     try {
       return await this.natsClient.send({ cmd: 'removeRestaurant' }, id).toPromise();

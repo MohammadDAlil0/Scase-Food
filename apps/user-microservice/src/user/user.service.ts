@@ -9,6 +9,8 @@ import { DataBaseService } from '@app/common/database';
 import { CreateUserDto, LoginDto, ChangeRoleDto, CreateOrderDto, ChangeStatusDto } from '@app/common/dto/userDtos';
 import { User, Order } from '@app/common/models';
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
+import { lastValueFrom } from 'rxjs';
+import { PaginationDto } from '@app/common/dto/globalDtos';
 
 @Injectable()
 export class UserService {
@@ -65,10 +67,10 @@ export class UserService {
       });
     }
 
-    async changeRole(dto: ChangeRoleDto) {
-        const updatedUser: User = await this.dataBaseService.findByPkOrThrow(this.UserModel, dto.userId);
+    async changeRole(changeRoleDto: ChangeRoleDto) {
+        const updatedUser: User = await this.dataBaseService.findByPkOrThrow(this.UserModel, changeRoleDto.userId);
 
-        updatedUser.role = dto.role;
+        updatedUser.role = changeRoleDto.role;
         await updatedUser.save();
         
         this.natsClient.emit({ cmd: 'createNotification' }, {
@@ -93,15 +95,16 @@ export class UserService {
     }
 
     async changeStatus(changeStatusDto: ChangeStatusDto) {
-      const curUser: User = changeStatusDto.curUser;
-      const getUser: User = await this.dataBaseService.findByPkOrThrow(this.UserModel, curUser.id);
+      // 
+      const getUser: User = await this.dataBaseService.findByPkOrThrow(this.UserModel, changeStatusDto.userId);
       getUser.status = (getUser.status === Status.ONGOING ? Status.IDLE : Status.ONGOING);
       if (getUser.status === Status.ONGOING) {
         this.natsClient.emit({ cmd: 'createUsersNotifications' }, {
           title: 'New Order',
           description: 'Are you hungry? Someone contribute to order'
         });
-        getUser.dataToCall = changeStatusDto.dateToCall || new Date(Date.now() + 20 * 60 * 1000);
+        getUser.dataToCall = changeStatusDto.dateToCall || new Date(Date.now() + 20 * 60 * 1000); //By default put 20 minutes to order. 
+        getUser.resaurantId = changeStatusDto.restaurantId;
       } else {
         const [numberOfEffectedRows] = await this.OrderModel.update<Order>({
           statusOfOrder: StatusOfOrder.DONE
@@ -115,24 +118,22 @@ export class UserService {
         if (numberOfEffectedRows !== 0) { // Find at least one order to prevent fake contributions
           getUser.numberOfContributions++;
         }
+        getUser.dataToCall = getUser.resaurantId = null;
       }
       await getUser.save()
       return getUser;
     }
 
     async createOrder(createOrderDto: CreateOrderDto) {
-      // TOIMPROVE: You can find the contributor from the Guard and pass it to here which prevent deplicated search in the database
-      const contributor: User = await this.dataBaseService.findByPkOrThrow(this.UserModel, createOrderDto.contributorId);
-        
       return await this.OrderModel.create({
-        ...createOrderDto,
-        numberOfContributions: contributor.numberOfContributions
+        ...createOrderDto
       });
     }
 
     async submitOrder(orderId: string) {
       const order: Order = await this.dataBaseService.findByPkOrThrow(this.OrderModel, orderId);
-      const orderedFood = await this.natsClient.send({ cmd: 'getFoodOfOrder' }, orderId).toPromise();
+      const orderedFood = await lastValueFrom(this.natsClient.send({ cmd: 'getFoodOfOrder' }, orderId));
+      
       order.totalPrice = 0;
       orderedFood.forEach(element => {
         order.totalPrice += element.price;
@@ -146,24 +147,29 @@ export class UserService {
         desciption: "Say 'wait' to your stomack, your order on the queue"
       });
       
-      return {
-        order
-      };
+      return order;
     }
 
-    async getAllActiveContributors() {
+    async getAllActiveContributors(filter: PaginationDto) {
       const contributors = await this.UserModel.findAll<User>({
-        where: {
-          status: Status.ONGOING
-        }
+        where: {status: Status.ONGOING},
+        limit: filter.limit,
+        offset: (filter.page - 1) * filter.limit
       });
       return contributors;
     }
 
     async changeStatusOfOrder(orderId: string) {
-      const order: Order = await this.dataBaseService.findByPkOrThrow(this.OrderModel, orderId);
-      order.statusOfOrder = (order.statusOfOrder === StatusOfOrder.PAIED ? StatusOfOrder.UNPAIED : StatusOfOrder.PAIED);
-      if (order.statusOfOrder) {
+      const order: Order = await this.dataBaseService.findOneOrThrow(this.OrderModel, {
+        where: {id: orderId},
+        include: [{ model: User, as: 'contributor'}]
+      });
+      if (order.contributor.numberOfContributions < order.numberOfContribution) {
+        order.statusOfOrder = (order.statusOfOrder === StatusOfOrder.DONE ? StatusOfOrder.UNPAIED : StatusOfOrder.DONE);  
+      } else {
+        order.statusOfOrder = (order.statusOfOrder === StatusOfOrder.PAIED ? StatusOfOrder.UNPAIED : StatusOfOrder.PAIED);
+      }
+      if (order.statusOfOrder !== StatusOfOrder.UNPAIED) {
         this.natsClient.emit({ cmd: 'createNotification' }, {
           userId: order.createdBy,
           title: 'Thank you for your money',
@@ -174,9 +180,11 @@ export class UserService {
       return order;
     }
 
-    async getTopContributors() {
+    async getTopContributors(filter: PaginationDto) {
       const contributors = await this.UserModel.findAll({
-        order: [ ['numberOfContributions', 'DESC'] ]
+        order: [ ['numberOfContributions', 'DESC'] ],
+        limit: filter.limit,
+        offset: (filter.page - 1) * filter.limit
       });
       return contributors;
     }

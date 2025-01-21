@@ -1,19 +1,34 @@
 import { User } from "@app/common/models";
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Type } from "class-transformer";
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
+/**
+ * @property userId string
+ * @param dateToCall? Date
+ * @param resaurantId? string
+ */
 export class ChangeStatusDto {
+    @IsString()
+    @IsNotEmpty()
+    @Exclude()
+    userId: string;
+
     @ApiProperty({
         description: 'Expected Date to call',
         type: Date
     })
     @IsOptional()
-    @IsNotEmpty()
     @Type(() => Date)
     dateToCall?: Date;
 
-    @Exclude()
+    @ApiProperty({
+        description: 'Restaurant ID',
+        type: String,
+        example: 'xxxx-xxxx'
+    })
+    @IsString()
     @IsOptional()
-    curUser: User;
+    @IsNotEmpty()
+    restaurantId?: string;
 }

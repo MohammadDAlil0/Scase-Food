@@ -1,8 +1,9 @@
-import { AfterCreate, AfterFind, AllowNull, BeforeCreate, Column, DataType, Default, Index, Length, NotEmpty, Table, Unique } from "sequelize-typescript";
+import { AfterCreate, AfterFind, AllowNull, BeforeCreate, Column, DataType, Default, ForeignKey, Index, Length, NotEmpty, Table, Unique } from "sequelize-typescript";
 import * as argon from 'argon2';
 import { BadRequestException } from "@nestjs/common";
 import { BaseModel } from "./base.model";
 import { Role, Status } from "../constants";
+import { Restaurant } from "./restaurant.model";
 
 @Table({
     tableName: 'user_table',
@@ -41,9 +42,14 @@ export class User extends BaseModel {
     @Column(DataType.DATE)
     passwordResetExpires?: Date;
     
-    @AllowNull(true)
+    @AllowNull
     @Column(DataType.DATE)
-    dataToCall: Date;
+    dataToCall?: Date;
+
+    @AllowNull
+    @ForeignKey(() => Restaurant)
+    @Column(DataType.UUID)
+    resaurantId?: string;
 
     @Default(Status.IDLE)
     @Column(DataType.ENUM(...Object.values(Status)))
