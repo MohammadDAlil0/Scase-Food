@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConsoleLogger, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -11,6 +11,7 @@ import { User, Order } from '@app/common/models';
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 import { lastValueFrom } from 'rxjs';
 import { PaginationDto } from '@app/common/dto/globalDtos';
+import { GetOrdersOfContributionDto } from '@app/common/dto/userDtos/get-orders-of-contribution.dto';
 
 @Injectable()
 export class UserService {
@@ -105,7 +106,6 @@ export class UserService {
         });
         getUser.dateToCall = changeStatusDto.dateToCall || new Date(Date.now() + 20 * 60 * 1000); //By default put 20 minutes to order.
         if (!changeStatusDto.restaurantId) {
-          console.log(changeStatusDto.restaurantId);
           throw new BadRequestException('Please provide a restaurant ID');
         }
         getUser.resaurantId = changeStatusDto.restaurantId;
@@ -119,7 +119,7 @@ export class UserService {
             statusOfOrder: StatusOfOrder.PAIED
           }
         });
-        this.OrderModel.destroy({ // Delete all forms that is on-going and doesn't submitted yet
+        this.OrderModel.destroy({ // Delete all orders that is on-going and doesn't submitted yet
           where: {
             contributorId: getUser.id,
             numberOfContributions: getUser.numberOfContributions,
@@ -142,7 +142,9 @@ export class UserService {
     }
 
     async submitOrder(orderId: string) {
+      console.log(orderId);
       const order: Order = await this.dataBaseService.findByPkOrThrow(this.OrderModel, orderId);
+      console.log(order);
       const orderedFood = await lastValueFrom(this.natsClient.send({ cmd: 'getFoodOfOrder' }, orderId));
       
       order.totalPrice = 0;
@@ -195,7 +197,7 @@ export class UserService {
       const contributors = await this.UserModel.findAll({
         order: [ ['numberOfContributions', 'DESC'] ],
         limit: filter.limit,
-        offset: (filter.limit - 1) * filter.page
+        offset: (filter.page - 1) * filter.limit
       });
       return contributors;
     }
@@ -207,5 +209,18 @@ export class UserService {
         }
       });
       return orders;
+    }
+
+    async getOrdersOfContribution(getOrdersOfContributionDto: GetOrdersOfContributionDto) {
+      let numberOfContributions = getOrdersOfContributionDto.numberOfContributions;
+      if (getOrdersOfContributionDto.status === Status.IDLE) numberOfContributions--;
+      return await this.OrderModel.findAll<Order>({
+        where: {
+          contributorId: getOrdersOfContributionDto.id,
+          numberOfContributions: numberOfContributions
+        },
+        limit: getOrdersOfContributionDto.limit,
+        offset: (getOrdersOfContributionDto.page - 1) * getOrdersOfContributionDto.limit
+      });
     }
 }

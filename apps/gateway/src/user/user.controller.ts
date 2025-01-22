@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, Inject, Param, Post, Put, Query, ValidationPipe } from '@nestjs/common';
-import { ChangeRoleDecorator, ChangeStatusDecorator, ChangeStatusOfOrder, CraeteOrderDecorator, GetAllActiveContributors, GetAllUsersDecorator, GetMyOrders, GetTopContributors, LoginDecorators, SignupDecorators, SubmitOrderDecorator } from './decorators/user-appliers.decorator';
+import { ChangeRoleDecorator, ChangeStatusDecorator, ChangeStatusOfOrder, CraeteOrderDecorator, GetAllActiveContributors, GetAllUsersDecorator, GetMyOrders, getOrdersOfContributionDecorator, GetTopContributors, LoginDecorators, SignupDecorators, SubmitOrderDecorator } from './decorators/user-appliers.decorator';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { GetUser } from './decorators/get-user.decortator';
 import { User } from '@app/common/models';
@@ -107,6 +107,17 @@ export class UserController {
     async getMyOrders(@GetUser() curUser: User) {
         return await lastValueFrom(
             this.natsClient.send({ cmd: 'getMyOrders' }, curUser.id)
+        );
+    }
+
+    @Get('getOrdersOfContribution')
+    @getOrdersOfContributionDecorator()
+    async getOrdersOfContribution(@Query() filter: PaginationDto, @GetUser() user: User) {
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'getOrdersOfContribution' }, {
+                ...filter,
+                ...user.dataValues
+            })
         );
     }
 }

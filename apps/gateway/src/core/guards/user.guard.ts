@@ -1,6 +1,6 @@
 import { Status } from '@app/common/constants';
 import { DataBaseService } from '@app/common/database';
-import { Order, User } from '@app/common/models';
+import { Food, Order, User } from '@app/common/models';
 import { CanActivate, ExecutionContext, Injectable, BadRequestException, Inject, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Observable } from 'rxjs';
@@ -112,15 +112,18 @@ export class UserOrderGuard implements CanActivate {
 @Injectable()
 export class FoodRestauranGuard implements CanActivate {
   constructor(
+    @Inject() private readonly dataBaseService: DataBaseService,
     @InjectModel(Order) private readonly OrderModel: typeof Order,
+    @InjectModel(Food) private readonly FoodModel: typeof Food
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const orderId = request.body.orderId || request.params.orderId;
+    const foodId = request.body.foodId || request.params.foodId;
     const curUserId = request.user.id;
     
-    const order = await this.OrderModel.findOne({
+    const order: Order = await this.dataBaseService.findOneOrThrow(this.OrderModel, {
       where: {
         id: orderId,
         createdBy: curUserId,
@@ -128,12 +131,14 @@ export class FoodRestauranGuard implements CanActivate {
       include: [{ model: User, as: 'contributor' }]
     });
 
-    if (!order) {
-      throw new ForbiddenException("You don't have such an order ID");
-    }
-
     if (order.contributor.numberOfContributions !== order.numberOfContributions) {
       throw new ForbiddenException('Do you think I am stupid! your order has already done')
+    } 
+
+    const food: Food = await this.dataBaseService.findByPkOrThrow(this.FoodModel, foodId);
+
+    if (order.contributor.resaurantId !== food.restaurantId) {
+      throw new ForbiddenException('Make sure you are addinga a food from the same restaurant')
     }
 
     return true;

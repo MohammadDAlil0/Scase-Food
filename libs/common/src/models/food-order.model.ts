@@ -17,5 +17,5 @@ export class FoodOrder extends BaseModel {
     orderId: string;
 
     @Column(DataType.INTEGER)
-    number: number;
+    price: number;
 }

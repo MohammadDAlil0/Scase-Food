@@ -129,7 +129,7 @@ export function SubmitOrderDecorator() {
     ApiOperation({ summary: 'Submit Order' }),
     ApiResponse({ status: HttpStatus.OK, description: 'You will get a message' }),
     ApiBearerAuth(),
-    UseGuards(JwtGuard, RolesGuard, StillOnGoingGuard, UserOrderGuard),
+    UseGuards(JwtGuard, RolesGuard, UserOrderGuard),
     Roles(Role.ADMIN, Role.USER),
   );
 }
@@ -212,4 +212,24 @@ export function GetMyOrders() {
     UseGuards(JwtGuard, RolesGuard),
     Roles(Role.ADMIN, Role.USER),
   );
+}
+
+/**
+ * Applies decorators for the "Get Orders Of A Contribution" endpoint.
+ * 
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Get Orders Of A Contribution".
+ * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will get the orders of a contribution".
+ * - `ApiBearerAuth` to enable JWT authentication.
+ * - `UseGuards(JwtGuard, RolesGuard)` to enforce JWT and role-based access control.
+ * - `Roles(Role.ADMIN, Role.USER)` to restrict access to users with the `ADMIN` or `USER` role.
+ */
+export function getOrdersOfContributionDecorator() {
+  return applyDecorators(
+    ApiOperation({ summary: 'Get Orders Of A Contribution' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will get the orders of a contribution' }),
+    ApiBearerAuth(),
+    UseGuards(JwtGuard, RolesGuard),
+    Roles(Role.ADMIN, Role.USER),
+  )
 }

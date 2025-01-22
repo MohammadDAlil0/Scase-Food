@@ -4,6 +4,8 @@ import { UserService } from './user.service';
 import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, CreateOrderDto } from '@app/common/dto/userDtos';
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 import { PaginationDto } from '@app/common/dto/globalDtos';
+import { User } from '@app/common/models';
+import { GetOrdersOfContributionDto } from '@app/common/dto/userDtos/get-orders-of-contribution.dto';
 
 @Controller('user')
 export class UserController {
@@ -65,5 +67,10 @@ export class UserController {
     @MessagePattern({ cmd: 'getMyOrders' })
     getMyOrders(@Payload() userId: string) {
         return this.userService.getMyOrders(userId);
+    }
+
+    @MessagePattern({ cmd: 'getOrdersOfContribution' })
+    getOrdersOfContribution(@Payload() getOrdersOfContributionDto: GetOrdersOfContributionDto) {
+        return this.userService.getOrdersOfContribution(getOrdersOfContributionDto);
     }
 }

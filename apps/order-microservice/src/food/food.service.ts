@@ -63,13 +63,7 @@ export class FoodService {
     const foods = await this.FoodOrderModel.findAll<FoodOrder>({
       where: {
         orderId: id,
-      },
-      include: [
-        {
-          model: Food,
-          as: 'food',
-        }
-      ]
+      }
     });
     return foods;
   }

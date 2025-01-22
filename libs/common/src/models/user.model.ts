@@ -9,7 +9,7 @@ import { Restaurant } from "./restaurant.model";
     tableName: 'user_table',
     timestamps: true,
     defaultScope: {
-        attributes: { exclude: ['hash', 'passwordChangedAt', 'passwordResetToken', 'passwordResetToken', 'passwordResetExpires', 'updatedAt', 'resaurantId'] },
+        attributes: { exclude: ['hash', 'passwordChangedAt', 'passwordResetToken', 'passwordResetToken', 'passwordResetExpires', 'updatedAt'] },
     },
 })
 export class User extends BaseModel {
