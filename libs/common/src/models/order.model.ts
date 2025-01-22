@@ -31,9 +31,9 @@ export class Order extends BaseModel {
     contributor: User;
 
     @Column(DataType.INTEGER)
-    numberOfContribution: number;
+    numberOfContributions: number;
 
-    @BelongsToMany(() => Food, () => FoodOrder)
+    @BelongsToMany(() => Food, { through: () => FoodOrder, onDelete: 'CASCADE' })
     foods: Food[];
 
     @Column(DataType.INTEGER)

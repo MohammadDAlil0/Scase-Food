@@ -4,10 +4,10 @@ import { FoodController } from './food.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Food, FoodOrder, Restaurant } from '@app/common/models';
 import { NatsClientModule } from '@app/common/nats-client';
+import { DatabaseModule } from '@app/common/database';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Food, Restaurant, FoodOrder]),
     NatsClientModule, 
   ],
   controllers: [FoodController],

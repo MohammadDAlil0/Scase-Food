@@ -1,6 +1,6 @@
-import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus } from "@nestjs/common";
+import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus, BadRequestException } from "@nestjs/common";
 import { of } from "rxjs";
-import { UniqueConstraintError, ValidationError, ConnectionRefusedError } from "sequelize";
+import { UniqueConstraintError, ValidationError, ConnectionRefusedError, ForeignKeyConstraintError } from "sequelize";
 
 @Catch()
 export class MicroserviceExceptionFilter implements ExceptionFilter {
@@ -17,6 +17,16 @@ export class MicroserviceExceptionFilter implements ExceptionFilter {
         else if (exception instanceof UniqueConstraintError || exception instanceof ValidationError) {
           statusCode = HttpStatus.BAD_REQUEST,
           messages = exception.errors.map((e: any) => e.message);
+        }
+        else if (exception instanceof ForeignKeyConstraintError) {
+          path = exception.stack;
+          statusCode = HttpStatus.BAD_REQUEST;
+          messages = [`Can't find the ID in the ${exception.table}`]
+        }
+        else if (exception instanceof BadRequestException) {
+          path = exception.stack;
+          statusCode = HttpStatus.BAD_REQUEST;
+          messages = [exception.message];
         }
         console.log(exception.constructor.name)
 

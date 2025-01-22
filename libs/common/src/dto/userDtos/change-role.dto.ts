@@ -1,25 +1,34 @@
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
-import { Role } from "@app/common/constants";
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@app/common/constants';
 
 /**
- * @param userId string
- * @param role Role - The role of the user, which can be ADMIN, USER, or GHOST
+ * Data Transfer Object (DTO) for changing a user's role.
+ * 
+ * @property userId - The ID of the user whose role will be changed.
+ * @property role - The new role of the user, which can be ADMIN, USER, or GHOST.
  */
 export class ChangeRoleDto {
-    @ApiProperty({
-        description: 'User ID',
-        type: String,
-        example: 'xxxx-xxxx'
-    })
-    @IsString()
-    @IsNotEmpty()
-    userId: string;
+  /**
+   * The ID of the user whose role will be changed.
+   */
+  @ApiProperty({
+    description: 'User ID',
+    type: String,
+    example: 'xxxx-xxxx',
+  })
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
 
-    @IsEnum(Role)
-    @ApiProperty({
-        description: 'Role of a user',
-        enum: ['GHOST', 'USER', 'ADMIN']
-    })
-    role: Role;
+  /**
+   * The new role of the user.
+   */
+  @ApiProperty({
+    description: 'Role of a user',
+    enum: Role, // Use the Role enum directly
+    example: 'USER',
+  })
+  @IsEnum(Role)
+  role: Role;
 }

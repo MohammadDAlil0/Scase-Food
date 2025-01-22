@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query } from '@nestjs/common';
 import { AddFoodDecorator, CreateFoodDecorator, DeleteFoodDecorator, DeleteFoodFromOrderDecorator, FindAllFoodDecorator, FindFoodDecorator, FoodGlobalDecorator, UpdateFoodDecorator } from './decorators/food-appliers.decorator';
 import { ClientProxy } from '@nestjs/microservices';
-import { AddFoodDto, CreateFoodDto, UpdateFoodDto } from '@app/common/dto/foodDtos';
+import { AddFoodDto, CreateFoodDto, FindAllFoodDto, UpdateFoodDto } from '@app/common/dto/foodDtos';
 import { lastValueFrom } from 'rxjs';
 
 @Controller('food')
@@ -38,9 +38,9 @@ export class FoodController {
 
   @Get()
   @FindAllFoodDecorator()
-  async findAll() {
+  async findAll(@Query() filter: FindAllFoodDto) {
     return await lastValueFrom(
-      this.natsClient.send({ cmd: 'findAllFood' }, {})
+      this.natsClient.send({ cmd: 'findAllFood' }, filter)
     );
   }
 

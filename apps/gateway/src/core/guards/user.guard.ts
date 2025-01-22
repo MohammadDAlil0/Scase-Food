@@ -105,3 +105,37 @@ export class UserOrderGuard implements CanActivate {
     return true;
   }
 }
+
+/**
+ * Use this gaurd to check if the food belongs to the restaurant which the user want to order from. Also, it prevants to remove food from old orders.
+ */
+@Injectable()
+export class FoodRestauranGuard implements CanActivate {
+  constructor(
+    @InjectModel(Order) private readonly OrderModel: typeof Order,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const orderId = request.body.orderId || request.params.orderId;
+    const curUserId = request.user.id;
+    
+    const order = await this.OrderModel.findOne({
+      where: {
+        id: orderId,
+        createdBy: curUserId,
+      },
+      include: [{ model: User, as: 'contributor' }]
+    });
+
+    if (!order) {
+      throw new ForbiddenException("You don't have such an order ID");
+    }
+
+    if (order.contributor.numberOfContributions !== order.numberOfContributions) {
+      throw new ForbiddenException('Do you think I am stupid! your order has already done')
+    }
+
+    return true;
+  }
+}

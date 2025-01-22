@@ -1,6 +1,8 @@
-import { BelongsTo, Column, DataType, ForeignKey, Length, Min, NotEmpty, Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Length, Min, NotEmpty, Table } from "sequelize-typescript";
 import { BaseModel } from "./base.model";
 import { Restaurant } from "./restaurant.model";
+import { FoodOrder } from "./food-order.model";
+import { Order } from "./order.model";
 
 @Table({
     tableName: 'food_table',
@@ -33,4 +35,7 @@ export class Food extends BaseModel {
 
     @BelongsTo(() => Restaurant, { foreignKey: 'roleChangedBy', as: 'roleChangedByUser' })
     restaurant: Restaurant;
+
+    @BelongsToMany(() => Order, { through: () => FoodOrder, onDelete: 'CASCADE' })
+    orders: Order[];
 }

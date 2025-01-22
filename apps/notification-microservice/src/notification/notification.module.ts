@@ -6,7 +6,6 @@ import { Notification, User } from '@app/common/models';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Notification, User])
   ],
   controllers: [NotificationController],
   providers: [NotificationService],

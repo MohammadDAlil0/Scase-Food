@@ -1,5 +1,5 @@
 import { DataBaseService } from '@app/common/database';
-import { CreateRestaurantDto, UpdateRestaurantDto } from '@app/common/dto/orderDtos';
+import { CreateRestaurantDto, FindAllRestaurantsDto, UpdateRestaurantDto } from '@app/common/dto/restaurantDtos';
 import { Restaurant } from '@app/common/models';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
@@ -18,8 +18,13 @@ export class RestaurantService {
     });
   }
 
-  async findAll() {
-    return await this.RestaurantModel.findAll({});
+  async findAll(filter: FindAllRestaurantsDto) {
+    const { page, limit, ...rest } = filter;
+    return await this.RestaurantModel.findAll({
+      where: {...rest},
+      limit,
+      offset: (page - 1) * limit
+    });
   }
 
   async findOne(id: string) {

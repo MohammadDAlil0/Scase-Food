@@ -7,7 +7,6 @@ import { NatsClientModule } from '@app/common/nats-client';
 @Module({
   imports: [
     NatsClientModule,
-    SequelizeModule.forFeature([Order])
   ],
   controllers: [FoodController],
   providers: [],

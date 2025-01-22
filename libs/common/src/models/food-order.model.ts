@@ -18,7 +18,4 @@ export class FoodOrder extends BaseModel {
 
     @Column(DataType.INTEGER)
     number: number;
-
-    // @Column(DataType.INTEGER)
-    // price: number;
 }

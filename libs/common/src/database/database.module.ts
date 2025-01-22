@@ -2,6 +2,7 @@ import { Global, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { DataBaseService } from "./database.service";
+import { User, Order, FoodOrder, Food, Restaurant, Notification } from "../models";
 
 @Global()
 @Module({
@@ -18,13 +19,15 @@ import { DataBaseService } from "./database.service";
           database: configService.getOrThrow(`DATA_BASE_NAME_${nodeEnv}`),
           autoLoadModels: true,
           synchronize: true,
+          // sync: {force: true},
           logging: configService.getOrThrow(`DATA_BASE_LOGGING_${nodeEnv}`) === 'true' ? console.log : false,
         }
       },
       inject: [ConfigService],
     }),
+    SequelizeModule.forFeature([User, Order, FoodOrder, Food, Restaurant, Notification]),
   ],
   providers: [DataBaseService],
-  exports: [DataBaseService]
+  exports: [DataBaseService, SequelizeModule],
 })
 export class DatabaseModule {}

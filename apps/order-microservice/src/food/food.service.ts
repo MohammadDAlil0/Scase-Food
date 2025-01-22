@@ -1,5 +1,5 @@
 import { DataBaseService } from '@app/common/database';
-import { CreateFoodDto, UpdateFoodDto, AddFoodDto } from '@app/common/dto/foodDtos';
+import { CreateFoodDto, UpdateFoodDto, AddFoodDto, FindAllFoodDto } from '@app/common/dto/foodDtos';
 import { Food, FoodOrder } from '@app/common/models';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
@@ -19,8 +19,13 @@ export class FoodService {
     });
   }
 
-  async findAll() {
-    return await this.FoodModel.findAll({});
+  async findAll(filter: FindAllFoodDto) {
+    const { page, limit, ...rest } = filter;
+    return await this.FoodModel.findAll({
+      where: {...rest},
+      limit,
+      offset: (page - 1) * limit
+    });
   }
 
   async findOne(id: string) {

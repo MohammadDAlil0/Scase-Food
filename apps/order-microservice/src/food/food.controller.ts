@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { FoodService } from './food.service';
-import { CreateFoodDto, UpdateFoodDto, AddFoodDto } from '@app/common/dto/foodDtos';
+import { CreateFoodDto, UpdateFoodDto, AddFoodDto, FindAllFoodDto } from '@app/common/dto/foodDtos';
 
 @Controller()
 export class FoodController {
@@ -16,8 +16,8 @@ export class FoodController {
   }
 
   @MessagePattern({ cmd: 'findAllFood' })
-  findAll() {
-    return this.foodService.findAll();
+  findAll(@Payload() filter: FindAllFoodDto) {
+    return this.foodService.findAll(filter);
   }
 
   @MessagePattern({ cmd: 'findOneFood' })
