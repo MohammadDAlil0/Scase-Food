@@ -3,7 +3,7 @@ import { BaseModel } from "./base.model";
 import { User } from "./user.model";
 
 @Table({
-    tableName: 'notification_tablel',
+    tableName: 'notification_table',
     timestamps: true,
     indexes: [
         {

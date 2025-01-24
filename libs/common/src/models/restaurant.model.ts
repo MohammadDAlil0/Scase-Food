@@ -2,7 +2,7 @@ import { AllowNull, Column, DataType, Length, NotEmpty, Table } from "sequelize-
 import { BaseModel } from "./base.model";
 
 @Table({
-    tableName: 'restaurant_tablel',
+    tableName: 'restaurant_table',
     timestamps: true,
     indexes: [
         {
