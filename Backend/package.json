@@ -1,5 +1,5 @@
 {
-  "name": "scase_food_v2",
+  "name": "scase-food",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -11,13 +11,13 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/apps/scase_food_v2/main",
+    "start:prod": "node dist/apps/scase-food/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/scase_food_v2/apps/food-microservice/scase_food_v2/test/jest-e2e.json",
+    "test:e2e": "jest --config ./apps/scase-food/apps/food-microservice/scase-food/test/jest-e2e.json",
     "seed": "npx ts-node ./templates/seed.data.ts",
     "start:dev:all": "concurrently \"pnpm start:dev gateway\" \"pnpm start:dev user-microservice\" \"pnpm start:dev notification-microservice\" \"pnpm start:dev order-microservice\" \"pnpm start:dev restaurant-microservice\" \"pnpm start:dev food-microservice\""
   },
