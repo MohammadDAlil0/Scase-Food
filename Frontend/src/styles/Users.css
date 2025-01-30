@@ -1,0 +1,145 @@
+/* Container for the entire component */
+.users-container {
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+/* Header Section */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header-section h1 {
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+}
+
+/* Filter Section */
+.filter-section {
+  width: 50%;
+  margin-bottom: 30px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin: 10px; /* Added padding */
+}
+
+.filter-section input,
+.filter-section select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  flex: 1 1 200px; /* Allow inputs to grow and shrink, with a base width of 200px */
+}
+
+.filter-section input:focus,
+.filter-section select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.filter-section input::placeholder {
+  color: #999;
+}
+
+.filter-section select {
+  appearance: none; /* Remove default arrow */
+  background-color: white;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007BFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 30px;
+}
+
+/* Users Table */
+.users-table {
+  width: 99%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  margin: 10px; /* Added padding */
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.users-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  color: #333;
+}
+
+.users-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.users-table select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.users-table select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Pagination Container */
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px; /* Added padding */
+}
+
+/* Pagination Buttons */
+.pagination button {
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  background-color: #f4f4f4;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 20px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover Effect for Buttons */
+.pagination button:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  transform: scale(1.1);
+}
+
+/* Disabled Button Style */
+.pagination button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  border-color: #ccc;
+}
+
+/* Page Number Text */
+.pagination span {
+  font-size: 14px;
+  color: #333;
+  font-weight: bold;
+}
