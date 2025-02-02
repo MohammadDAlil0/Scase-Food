@@ -119,6 +119,70 @@
   color: #666;
 }
 
+/* Summary Section Styling */
+.summary-section {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.summary-section:hover {
+  background-color: #f1f1f1;
+}
+
+.summary-section h3 {
+  margin-top: 0;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.summary-section p {
+  margin: 8px 0;
+  font-size: 1em;
+  color: #555;
+}
+
+.summary-section h4 {
+  margin: 16px 0 8px 0;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.summary-section ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-section ul li {
+  margin: 8px 0;
+  font-size: 1em;
+  color: #555;
+}
+
+.summary-section ul li strong {
+  color: #333;
+}
+
+/* Collapsible Styling (Optional) */
+.summary-section.collapsed {
+  max-height: 60px; /* Adjust based on your needs */
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.summary-section.expanded {
+  max-height: 500px; /* Adjust based on your content */
+  transition: max-height 0.3s ease;
+}
+
 @media (max-width: 768px) {
   .food-item {
     flex-direction: column;
@@ -134,4 +198,20 @@
     font-size: 12px;
     padding: 8px;
   }
+}
+
+.Food-content {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 20px;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.Food-content ul{
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
 }

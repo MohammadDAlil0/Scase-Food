@@ -20,7 +20,7 @@ const Food = () => {
         setFoods(response.data.data);
         fetchRestaurants(response.data.data); // Fetch restaurant details for each food item
       } catch (err) {
-        setError('Failed to fetch food items. Please try again later.');
+        setError(err.response?.data?.messages[0] || 'Failed to fetch food items. Please try again later.');
         console.error('Error fetching food items:', err);
       } finally {
         setLoading(false);

@@ -11,6 +11,8 @@ export class badRequestExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
+    
+
     response.status(exception.getStatus()).json(GlobalResponse({
       path: request.url,
       statusCode: exception.getStatus(),

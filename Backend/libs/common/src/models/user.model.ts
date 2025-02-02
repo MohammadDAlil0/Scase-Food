@@ -70,4 +70,13 @@ export class User extends BaseModel {
             throw new BadRequestException('Please provide a password when you are creating a user');
         }
     }
+    
+    createPasswordResetToken = async function() {
+        const resetToken = crypto.randomUUID();
+
+        this.passwordResetToken = await argon.hash(resetToken);
+        this.passwordResetExpires = Date.now() + 1000 * 60 * 10;
+
+        return resetToken;
+    }
 }

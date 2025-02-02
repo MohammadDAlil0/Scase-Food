@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/Restaurants.css'; // Reuse the same CSS
 
-const UpdateFood = () => {
+const CreateFood = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get the food ID from the URL
   const [formData, setFormData] = useState({
     name: '',
     price: 0,
@@ -16,21 +15,6 @@ const UpdateFood = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch food data on page load
-  useEffect(() => {
-    const fetchFood = async () => {
-      try {
-        const response = await API.get(`/food/${id}`);
-        setFormData(response.data.data); // Pre-fill the form with existing data
-      } catch (err) {
-        setError('Failed to fetch food details. Please try again.');
-        console.error('Error fetching food:', err);
-      }
-    };
-
-    fetchFood();
-  }, [id]);
-
   // Fetch restaurants on page load
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -38,7 +22,7 @@ const UpdateFood = () => {
         const response = await API.get('/restaurant?page=1&limit=10');
         setRestaurants(response.data.data);
       } catch (err) {
-        setError('Failed to fetch restaurants. Please try again later.');
+        setError(err.response?.data?.messages[0] || 'Failed to fetch restaurants. Please try again later.');
         console.error('Error fetching restaurants:', err);
       }
     };
@@ -62,27 +46,27 @@ const UpdateFood = () => {
     setError('');
 
     try {
-      const response = await API.patch(`/food/${id}`, formData);
-      if (response.status === 200) {
-        navigate('/food'); // Redirect to the food page after successful update
+      const response = await API.post('/food', {...formData, price: +formData.price});
+      if (response.status === 201) {
+        navigate('/food'); // Redirect to the food page after successful creation
       }
     } catch (err) {
-      setError('Failed to update food item. Please try again.');
-      console.error('Error updating food item:', err);
+      console.error('Error creating food item:', err);
+      setError(err.response?.data.messages[0] || 'Failed to create food item. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="update-restaurant-container">
-      <h1>Update Food</h1>
+    <div className="create-restaurant-container">
+      <h1>Create New Food</h1>
 
       {/* Error Message */}
       {error && <p className="error-message">{error}</p>}
 
-      {/* Update Food Form */}
-      <form onSubmit={handleSubmit} className="update-restaurant-form">
+      {/* Create Food Form */}
+      <form onSubmit={handleSubmit} className="create-restaurant-form">
         <label>
           Name:
           <input
@@ -90,6 +74,7 @@ const UpdateFood = () => {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
+            required
           />
         </label>
 
@@ -100,6 +85,7 @@ const UpdateFood = () => {
             name="price"
             value={formData.price}
             onChange={handleInputChange}
+            required
           />
         </label>
 
@@ -110,6 +96,7 @@ const UpdateFood = () => {
             name="picturePath"
             value={formData.picturePath}
             onChange={handleInputChange}
+            required
           />
         </label>
 
@@ -131,11 +118,11 @@ const UpdateFood = () => {
         </label>
 
         <button type="submit" disabled={loading} className="submit-button">
-          {loading ? 'Updating...' : 'Update Food'}
+          {loading ? 'Creating...' : 'Create Food'}
         </button>
       </form>
     </div>
   );
 };
 
-export default UpdateFood;
+export default CreateFood;

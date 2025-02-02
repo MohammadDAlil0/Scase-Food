@@ -41,7 +41,7 @@ const Home = () => {
         const response = await API.get('/user/getAllActiveContributors');
         setActiveContributors(response.data.data);
       } catch (err) {
-        setError('Failed to fetch active contributors. Please try again later.');
+        setError(err.response?.data?.messages[0] || 'Failed to fetch active contributors. Please try again later.');
         console.error('Error fetching active contributors:', err);
       }
     };
@@ -145,7 +145,7 @@ const Home = () => {
       const response = await API.get('/user/getAllActiveContributors?page=1&limit=10');
       setActiveContributors(response.data.data);
     } catch (err) {
-      setError('Failed to fetch active contributors. Please try again later.');
+      setError(err.response?.data?.messages[0] || 'Failed to fetch active contributors. Please try again later.');
       console.error('Error fetching active contributors:', err);
     }
   };

@@ -19,7 +19,7 @@ const MyOrders = () => {
 
         setOrders(response.data.data);
       } catch (err) {
-        setError('Failed to fetch orders. Please try again later.');
+        setError(err.response?.data?.messages[0] || 'Failed to fetch orders. Please try again later.');
         console.error('Error fetching orders:', err);
       } finally {
         setLoading(false);

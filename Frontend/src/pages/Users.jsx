@@ -75,7 +75,8 @@ const Users = () => {
       alert('User role updated successfully!');
     } catch (err) {
       console.error('Error updating user role:', err);
-      alert('Failed to update user role. Please try again.');
+      const message = err.response?.data?.messages[0] || 'Failed to update user role. Please try again.';
+      alert(message);
     }
   };
 

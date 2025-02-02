@@ -5,6 +5,7 @@ import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto } from '@app/co
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 import { PaginationDto } from '@app/common/dto/globalDtos';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { ForgotPasswordDto } from '@app/common/dto/userDtos/forgot-password.dto';
 
 @Controller('user')
 export class UserController {
@@ -48,6 +49,10 @@ export class UserController {
         return this.userService.getTopContributors(filter);
     }
 
+    @MessagePattern({ cmd: 'forgotPassword' })
+    forgotPassword(@Payload() forgotPasswordDto: ForgotPasswordDto) {
+        this.userService.forgotPassword(forgotPasswordDto);
+    }
     /**
      * Automatically, uncontribute all the users who forgot to click the uncontribute button from 3 hours.
      */

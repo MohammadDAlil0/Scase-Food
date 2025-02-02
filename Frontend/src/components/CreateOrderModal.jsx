@@ -19,7 +19,7 @@ const CreateOrderModal = ({ contributor, onClose }) => {
         console.log('Foods API Response:', response.data);
         setFoods(response.data.data);
       } catch (err) {
-        setError('Failed to fetch foods. Please try again later.');
+        setError(err.response?.data?.messages[0] || 'Failed to fetch foods. Please try again later.');
         console.error('Error fetching foods:', err);
       } finally {
         setLoading(false);
@@ -52,7 +52,7 @@ const CreateOrderModal = ({ contributor, onClose }) => {
       }
       setError('');
     } catch (err) {
-      setError('Failed to add food. Please try again.');
+      setError(err.response?.data?.messages[0] || 'Failed to add food. Please try again.');
       console.error('Error adding food:', err);
     } finally {
       setIsAddingFood(false);
@@ -74,7 +74,7 @@ const CreateOrderModal = ({ contributor, onClose }) => {
       }
       setError('');
     } catch (err) {
-      setError('Failed to remove food. Please try again.');
+      setError(err.response?.data?.messages[0] || 'Failed to remove food. Please try again.');
       console.error('Error removing food:', err);
     } finally {
       setIsRemovingFood(false);
@@ -102,7 +102,7 @@ const CreateOrderModal = ({ contributor, onClose }) => {
       alert('Order submitted successfully!');
       onClose(); // Close the modal after successful submission
     } catch (err) {
-      setError('Failed to submit order. Please try again.');
+      setError(err.response?.data?.messages[0] || 'Failed to submit order. Please try again.');
       console.error('Error submitting order:', err);
     } finally {
       setIsSubmittingOrder(false);

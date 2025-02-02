@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scase-food-frontend
+    restart: always
+    ports:
+      - "8080:80"  # Expose Nginx on port 8080
+    depends_on:
+      - backend

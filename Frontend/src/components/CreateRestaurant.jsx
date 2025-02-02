@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
-import '../styles/UpdateRestaurant.css'; // Add styles for the form
+import '../styles/CreateRestaurant.css'; // Add styles for the form
 
-const UpdateRestaurant = () => {
+const CreateRestaurant = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get the restaurant ID from the URL
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -14,21 +13,6 @@ const UpdateRestaurant = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Fetch restaurant data on page load
-  useEffect(() => {
-    const fetchRestaurant = async () => {
-      try {
-        const response = await API.get(`/restaurant/${id}`);
-        setFormData(response.data.data); // Pre-fill the form with existing data
-      } catch (err) {
-        setError('Failed to fetch restaurant details. Please try again.');
-        console.error('Error fetching restaurant:', err);
-      }
-    };
-
-    fetchRestaurant();
-  }, [id]);
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -43,27 +27,27 @@ const UpdateRestaurant = () => {
     setError('');
 
     try {
-      const response = await API.patch(`/restaurant/${id}`, formData);
-      if (response.status === 200) {
-        navigate('/restaurants'); // Redirect to the restaurants page after successful update
+      const response = await API.post('/restaurant', formData);
+      if (response.status === 201) {
+        navigate('/restaurants'); // Redirect to the restaurants page after successful creation
       }
     } catch (err) {
-      setError('Failed to update restaurant. Please try again.');
-      console.error('Error updating restaurant:', err);
+      setError(err.response?.data?.messages[0] || 'Failed to create restaurant. Please try again.');
+      console.error('Error creating restaurant:', err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="update-restaurant-container">
-      <h1>Update Restaurant</h1>
+    <div className="create-restaurant-container">
+      <h1>Create New Restaurant</h1>
 
       {/* Error Message */}
       {error && <p className="error-message">{error}</p>}
 
-      {/* Update Restaurant Form */}
-      <form onSubmit={handleSubmit} className="update-restaurant-form">
+      {/* Create Restaurant Form */}
+      <form onSubmit={handleSubmit} className="create-restaurant-form">
         <label>
           Name:
           <input
@@ -71,6 +55,7 @@ const UpdateRestaurant = () => {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
+            required
           />
         </label>
 
@@ -81,6 +66,7 @@ const UpdateRestaurant = () => {
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleInputChange}
+            required
           />
         </label>
 
@@ -91,6 +77,7 @@ const UpdateRestaurant = () => {
             name="picturePath"
             value={formData.picturePath}
             onChange={handleInputChange}
+            required
           />
         </label>
 
@@ -101,15 +88,16 @@ const UpdateRestaurant = () => {
             name="address"
             value={formData.address}
             onChange={handleInputChange}
+            required
           />
         </label>
 
         <button type="submit" disabled={loading} className="submit-button">
-          {loading ? 'Updating...' : 'Update Restaurant'}
+          {loading ? 'Creating...' : 'Create Restaurant'}
         </button>
       </form>
     </div>
   );
 };
 
-export default UpdateRestaurant;
+export default CreateRestaurant;

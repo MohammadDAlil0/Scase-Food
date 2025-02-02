@@ -18,7 +18,7 @@ import '../styles/Restaurants.css';
           const response = await API.get('/restaurant?page=1&limit=10');
           setRestaurants(response.data.data);
         } catch (err) {
-          setError('Failed to fetch restaurants. Please try again later.');
+          setError(err.response?.data?.messages[0] || 'Failed to fetch restaurants. Please try again later.');
           console.error('Error fetching restaurants:', err);
         } finally {
           setLoading(false);

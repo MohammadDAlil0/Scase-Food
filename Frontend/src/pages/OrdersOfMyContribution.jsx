@@ -75,7 +75,6 @@ const OrdersOfMyContribution = () => {
 
       const newStatus = response.data.data.statusOfOrder;
 
-
       // Update the local state to reflect the new status
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
@@ -89,6 +88,39 @@ const OrdersOfMyContribution = () => {
       console.error('Error updating status:', err);
     }
   };
+
+  // Calculate the total number of each type of food
+  const calculateFoodCounts = () => {
+    const foodCounts = {};
+
+    orders.forEach((order) => {
+      order.foods.forEach((food) => {
+        if (foodCounts[food.name]) {
+          foodCounts[food.name] += food.FoodOrder.number;
+        } else {
+          foodCounts[food.name] = food.FoodOrder.number;
+        }
+      });
+    });
+
+    return foodCounts;
+  };
+
+  // Calculate the total price of all orders
+  const calculateTotalPrice = () => {
+    return orders.reduce((sum, order) => sum + order.totalFoodPrice, 0);
+  };
+
+  // Calculate the total paid price
+  const calculateTotalPaidPrice = () => {
+    return orders
+      .filter((order) => order.statusOfOrder === 'PAIED' || order.statusOfOrder === 'DONE')
+      .reduce((sum, order) => sum + order.totalFoodPrice, 0);
+  };
+
+  const foodCounts = calculateFoodCounts();
+  const totalPrice = calculateTotalPrice();
+  const totalPaidPrice = calculateTotalPaidPrice();
 
   return (
     <div className="orders-of-my-contribution-container">
@@ -174,6 +206,20 @@ const OrdersOfMyContribution = () => {
           ))}
         </div>
       )}
+      {/* Summary Section */}
+      <div className="summary-section">
+        <p><strong>Total Price:</strong> ${totalPrice}</p>
+        <p><strong>Total Paid Price:</strong> ${totalPaidPrice}</p>
+      </div>
+      <div className='Food-content'>
+        <ul>
+            {Object.entries(foodCounts).map(([foodName, count]) => (
+              <li key={foodName}>
+                <strong>{foodName}:</strong> {count}
+              </li>
+            ))}
+          </ul>
+      </div>
     </div>
   );
 };

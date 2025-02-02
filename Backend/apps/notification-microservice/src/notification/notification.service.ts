@@ -13,12 +13,9 @@ export class NotificationService {
     @InjectModel(User) private readonly UserModel: typeof User
   ) {}
   async create(createNotificationDto: CreateNotificationDto) {
-    console.log(createNotificationDto);
-    console.log('Creating');
     await this.NotificationModel.create({
       ...createNotificationDto
     });
-    console.log('Ending');
   }
 
   async findAll(userId: string) {

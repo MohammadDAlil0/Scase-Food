@@ -19,6 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/scase-food/apps/food-microservice/scase-food/test/jest-e2e.json",
     "seed": "npx ts-node ./templates/seed.data.ts",
+    "start:all": "concurrently \"pnpm start gateway\" \"pnpm start user-microservice\" \"pnpm start notification-microservice\" \"pnpm start order-microservice\" \"pnpm start restaurant-microservice\" \"pnpm start food-microservice\"",
     "start:dev:all": "concurrently \"pnpm start:dev gateway\" \"pnpm start:dev user-microservice\" \"pnpm start:dev notification-microservice\" \"pnpm start:dev order-microservice\" \"pnpm start:dev restaurant-microservice\" \"pnpm start:dev food-microservice\""
   },
   "dependencies": {
@@ -95,5 +96,6 @@
     "moduleNameMapper": {
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
     }
-  }
+  },
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }

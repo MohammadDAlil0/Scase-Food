@@ -25,7 +25,7 @@ const AddFoodsModal = ({ order, onClose }) => {
 
         setFoods(filteredFoods);
       } catch (err) {
-        setError('Failed to fetch foods. Please try again later.');
+        setError(err.response?.data?.messages[0] || 'Failed to fetch foods. Please try again later.');
         console.error('Error fetching foods:', err);
       } finally {
         setLoading(false);
@@ -58,7 +58,7 @@ const AddFoodsModal = ({ order, onClose }) => {
       }
       setError('');
     } catch (err) {
-      setError('Failed to add food. Please try again.');
+      setError(err.response?.data?.messages[0] || 'Failed to add food. Please try again.');
       console.error('Error adding food:', err);
     } finally {
       setIsAddingFood(false);
@@ -80,7 +80,7 @@ const AddFoodsModal = ({ order, onClose }) => {
       }
       setError('');
     } catch (err) {
-      setError('Failed to remove food. Please try again.');
+      setError(err.response?.data?.messages[0] || 'Failed to remove food. Please try again.');
       console.error('Error removing food:', err);
     } finally {
       setIsRemovingFood(false);

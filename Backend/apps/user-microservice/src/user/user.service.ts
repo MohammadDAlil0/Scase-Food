@@ -11,6 +11,7 @@ import { User, Order, Restaurant } from '@app/common/models';
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 import { PaginationDto } from '@app/common/dto/globalDtos';
 import { convertFiltersToLike } from '@app/common/constants/filter-converter';
+import { ForgotPasswordDto } from '@app/common/dto/userDtos/forgot-password.dto';
 
 @Injectable()
 export class UserService {
@@ -136,6 +137,14 @@ export class UserService {
       if (notMeOrders.length > 0) {
         getUser.numberOfContributions++;
       }
+      else {
+        this.OrderModel.destroy({
+          where: {
+            contributorId: getUser.id,
+            numberOfContributions: getUser.numberOfContributions
+          }
+        })
+      }
       await getUser.save();
 
       this.natsClient.emit({ cmd: 'createNotificationosByIds' }, {
@@ -178,6 +187,16 @@ export class UserService {
       offset
     });
     return contributors;
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const user: User = await this.dataBaseService.findOneOrThrow(this.UserModel, {
+      where: {
+        email: forgotPasswordDto.email
+      }
+    });
+    const resetToken = user.createPasswordResetToken;
+
   }
 
   async uncontributeForgettens() {
