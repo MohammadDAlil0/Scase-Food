@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import '../styles/ResetPasswordPage.css'
 
 const ForgotPassword = () => {
-  const { resetToken } = useParams(); // Extract resetToken from the URL
-  const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
