@@ -1,11 +1,12 @@
 import { PaginationDto } from "@app/common/dto/globalDtos";
-import { CreateUserDto, LoginDto, FindAllUsersDto, ChangeRoleDto, ChangeStatusDto } from "@app/common/dto/userDtos";
+import { CreateUserDto, LoginDto, FindAllUsersDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto } from "@app/common/dto/userDtos";
 import { User } from "@app/common/models";
-import { Controller, Inject, Post, Body, Get, Query, Put } from "@nestjs/common";
+import { Controller, Inject, Post, Body, Get, Query, Put, Patch, Param } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { lastValueFrom } from "rxjs";
 import { GetUser } from "../core/decorators/get-user.decortator";
-import { SignupDecorators, LoginDecorators, GetMeDecorators, GetAllUsersDecorator, ChangeRoleDecorator, ChangeStatusDecorator, GetAllActiveContributors, GetTopContributors } from "./decorators/user-appliers.decorator";
+import { SignupDecorators, LoginDecorators, GetMeDecorators, GetAllUsersDecorator, ChangeRoleDecorator, ChangeStatusDecorator, GetAllActiveContributors, GetTopContributors, ForgotPasswordDecorators } from "./decorators/user-appliers.decorator";
+import { ForgotPasswordDto } from "@app/common/dto/userDtos/forgot-password.dto";
 
 @Controller('user')
 export class UserController {
@@ -26,6 +27,25 @@ export class UserController {
     async login(@Body() loginDto: LoginDto) {
         return await lastValueFrom(
             this.natsClient.send({ cmd: 'login' }, loginDto),
+        );
+    }
+
+    @Patch('forgotPassword')
+    @ForgotPasswordDecorators()
+    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'forgotPassword' }, forgotPasswordDto)
+        );
+    }
+
+    @Patch('resetPassword/:resetToken')
+    @ForgotPasswordDecorators()
+    async resetPassword(@Param('resetToken') resetToken: string, @Body() resetPasswordDto: ResetPasswordDto) {
+        return await lastValueFrom(
+            this.natsClient.send({ cmd: 'resetPassword' }, {
+                ...resetPasswordDto,
+                resetToken
+            })
         );
     }
 

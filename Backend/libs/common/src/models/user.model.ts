@@ -74,7 +74,7 @@ export class User extends BaseModel {
     createPasswordResetToken = async function() {
         const resetToken = crypto.randomUUID();
 
-        this.passwordResetToken = await argon.hash(resetToken);
+        this.passwordResetToken = resetToken;
         this.passwordResetExpires = Date.now() + 1000 * 60 * 10;
 
         return resetToken;

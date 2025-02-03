@@ -13,6 +13,8 @@ import UpdateFood from './components/UpdateFood';
 import Users from './pages/Users';
 import MyOrders from './pages/MyOrders';
 import OrdersOfMyContribution from './pages/OrdersOfMyContribution';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import ForgotPassword from './pages/ForgotPassword';
 
 function App() {
   return (
@@ -22,6 +24,9 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/ghost" element={<Ghost />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:resetToken" element={<ResetPasswordPage />} />
+
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>

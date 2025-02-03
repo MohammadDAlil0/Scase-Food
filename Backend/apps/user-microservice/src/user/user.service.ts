@@ -1,4 +1,4 @@
-import { BadRequestException, ConsoleLogger, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConsoleLogger, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -6,12 +6,15 @@ import * as argon from 'argon2';
 import { ClientProxy } from '@nestjs/microservices';
 import { Status, StatusOfOrder } from '@app/common/constants';
 import { DataBaseService } from '@app/common/database';
-import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto } from '@app/common/dto/userDtos';
+import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto } from '@app/common/dto/userDtos';
 import { User, Order, Restaurant } from '@app/common/models';
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 import { PaginationDto } from '@app/common/dto/globalDtos';
 import { convertFiltersToLike } from '@app/common/constants/filter-converter';
 import { ForgotPasswordDto } from '@app/common/dto/userDtos/forgot-password.dto';
+import { sendEmail } from '@app/common/constants/email';
+import { resetPasswordEmail } from '@app/common/constants/forgot-password-template';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class UserService {
@@ -21,7 +24,7 @@ export class UserService {
     @Inject('NATS_SERVICE') private readonly natsClient: ClientProxy,
     @Inject() private readonly jwt: JwtService,
     @Inject() private readonly config: ConfigService,
-    @Inject() private readonly dataBaseService: DataBaseService
+    @Inject() private readonly dataBaseService: DataBaseService,
   ) { }
 
   async signup(createUserDto: CreateUserDto) {
@@ -195,8 +198,45 @@ export class UserService {
         email: forgotPasswordDto.email
       }
     });
-    const resetToken = user.createPasswordResetToken;
 
+    const resetToken = await user.createPasswordResetToken();
+    await user.save({ validate: false });
+
+    const resetURL = `${this.config.getOrThrow('CLIENT_PROTOCOL')}://${this.config.getOrThrow('CLIENT_HOST')}:${this.config.getOrThrow('CLIENT_PORT')}/reset-password/${resetToken}`;
+
+    const message = resetPasswordEmail.replace('{{resetURL}}', resetURL);
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Your password reset token is valid for 10 min',
+        message: message
+      });
+      return 'Token sent to the email'
+    } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save({ validate: false });
+      throw new HttpException('There was an error sending the email. Try again later!', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async resetPassword(resetTokenDto: ResetPasswordDto) {
+    const passwordResetToken = resetTokenDto.resetToken;
+    const user: User = await this.dataBaseService.findOneOrThrow(this.UserModel, {
+      where: {
+        passwordResetToken, 
+        passwordResetExpires: {[Op.gte]: Date.now()}
+      },
+      attributes: { include: ['hash'] }
+    });
+    if (resetTokenDto.password !== resetTokenDto.confirmPassword) {
+      throw new BadRequestException("Passwords don't match!")
+    }
+    user.hash = await argon.hash(resetTokenDto.password);
+    user.passwordResetToken = user.passwordResetExpires = undefined;
+    await user.save();
+    return user;
   }
 
   async uncontributeForgettens() {

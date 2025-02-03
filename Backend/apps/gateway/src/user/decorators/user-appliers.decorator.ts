@@ -35,6 +35,38 @@ export function LoginDecorators() {
 }
 
 /**
+ * Applies decorators for the Forgot Password endpoint.
+ * 
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Forgot Password".
+ * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will recive a message. Check your mail box".
+ * - `HttpCode(HttpStatus.OK)` to set the HTTP status code to 200.
+ */
+export function ForgotPasswordDecorators() {
+  return applyDecorators(
+    ApiOperation({ summary: 'Forgot Your Password' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will recive a message. Check your mail box' }),
+    HttpCode(HttpStatus.OK),
+  );
+}
+
+/**
+ * Applies decorators for the Reset Password endpoint.
+ * 
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Reset Password".
+ * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will get the updated user".
+ * - `HttpCode(HttpStatus.OK)` to set the HTTP status code to 200.
+ */
+export function ResetPasswordDecorators() {
+  return applyDecorators(
+    ApiOperation({ summary: 'Reset Your Password' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will get the updated user' }),
+    HttpCode(HttpStatus.OK),
+  );
+}
+
+/**
  * Applies decorators for the "Get All Users" endpoint.
  * 
  * @returns {MethodDecorator} A set of decorators including:

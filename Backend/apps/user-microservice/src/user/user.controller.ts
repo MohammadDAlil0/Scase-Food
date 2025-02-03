@@ -1,7 +1,7 @@
 import { Controller, Inject } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserService } from './user.service';
-import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto } from '@app/common/dto/userDtos';
+import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto } from '@app/common/dto/userDtos';
 import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
 import { PaginationDto } from '@app/common/dto/globalDtos';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -51,8 +51,14 @@ export class UserController {
 
     @MessagePattern({ cmd: 'forgotPassword' })
     forgotPassword(@Payload() forgotPasswordDto: ForgotPasswordDto) {
-        this.userService.forgotPassword(forgotPasswordDto);
+        return this.userService.forgotPassword(forgotPasswordDto);
     }
+
+    @MessagePattern({ cmd: 'resetPassword' })
+    resetPassword(@Payload() resetPasswordDto: ResetPasswordDto) {
+        return this.userService.resetPassword(resetPasswordDto);
+    }
+
     /**
      * Automatically, uncontribute all the users who forgot to click the uncontribute button from 3 hours.
      */

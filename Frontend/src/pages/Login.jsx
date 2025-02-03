@@ -20,13 +20,13 @@ const Login = () => {
     setError('');
 
     try {
-        const response = await API.post('/user/login', formData);
+      const response = await API.post('/user/login', formData);
       console.log('Login successful:', response.data.data);
       console.log(response.data.data.access_token);
-      
+
       // Save the token to localStorage (or context/state)
       localStorage.setItem('token', response.data.data.access_token);
-    
+
 
       if (response.data.data.role === 'GHOST') {
         navigate('/ghost'); // Redirect to the Ghost page
@@ -62,6 +62,9 @@ const Login = () => {
             onChange={handleChange}
             required
           />
+          <p>
+            <Link to="/forgot-password">Forgot Your Password</Link>
+          </p>
         </div>
         <button type="submit">Login</button>
       </form>
