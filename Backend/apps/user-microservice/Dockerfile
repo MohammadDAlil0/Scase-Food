@@ -13,7 +13,7 @@ COPY . .
 
 RUN pnpm run build
 
-FROM node:alpine as production
+FROM node:alpine AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}

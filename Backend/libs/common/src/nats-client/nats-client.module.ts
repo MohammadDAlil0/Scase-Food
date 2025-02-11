@@ -1,31 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-/**
- * A message broker to send and receive messages between Gateway and microservices.
- */
 @Module({
   imports: [
-    ClientsModule.register([
+    ConfigModule.forRoot(), // Load environment variables
+    ClientsModule.registerAsync([
       {
         name: 'NATS_SERVICE',
-        transport: Transport.NATS,
-        options: {
-          servers: ['nats://nats:4222'],
-        },
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.NATS,
+          options: {
+            servers: [`nats://${configService.get<string>('NATS_HOST')}:4222`],
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],
-  exports: [
-    ClientsModule.register([
-      {
-        name: 'NATS_SERVICE',
-        transport: Transport.NATS,
-        options: {
-          servers: ['nats://nats:4222'],
-        },
-      },
-    ]),
-  ],
+  exports: [ClientsModule],
 })
 export class NatsClientModule {}

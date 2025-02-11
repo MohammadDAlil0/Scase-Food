@@ -76,7 +76,7 @@ export class UserService {
     this.natsClient.emit({ cmd: 'createNotification' }, {
       userId: updatedUser.id,
       title: 'Role Changed',
-      description: 'Your role has been changed'
+      description: 'Your role has been changed. 😇'
     });
 
     return updatedUser;
@@ -154,10 +154,9 @@ export class UserService {
       this.natsClient.emit({ cmd: 'createNotificationosByIds' }, {
         unPaidedIds,
         title: `No Money No Food`,
-        description: `${getUser.username} has orderd, but you didn't paied yet. What are you waiting for?! 🤬`
+        description: `${getUser.username} has orderd, but you haven't paied yet. What are you waiting for?! 🤬`
       });
     }
-
     return getUser;
   }
 

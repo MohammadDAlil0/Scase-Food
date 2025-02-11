@@ -17,8 +17,10 @@ const Home = () => {
   const [dateToCall, setDateToCall] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [noNotification, setNoNotitfications] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1); // Track current page
 
   // Fetch user status on page load
   useEffect(() => {
@@ -63,13 +65,13 @@ const Home = () => {
     };
 
     fetchTopContributors();
-  }, []);
+  }, [isContributing]);
 
   // Fetch restaurants
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await API.get('/restaurant?page=1&limit=10');
+        const response = await API.get('/restaurant');
         setRestaurants(response.data.data);
       } catch (err) {
         console.error('Error fetching restaurants:', err);
@@ -79,19 +81,33 @@ const Home = () => {
     fetchRestaurants();
   }, []);
 
-  // Fetch notifications
+  // Fetch unseen notification count
+  useEffect(() => {
+    const fetchNoNotifications = async () => {
+      try {
+        const response = await API.get('/Notification/CountUnseendNotfication');
+        setNoNotitfications(response.data.data.count);
+      } catch (err) {
+        console.error('Error fetching unseen notification count:', err);
+      }
+    };
+
+    fetchNoNotifications();
+  }, [isContributing, notifications]);
+
+  // Fetch notifications with pagination
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await API.get('/Notification');
-        setNotifications(response.data.data);
+        const response = await API.get(`/Notification?page=${currentPage}&limit=5`);
+        setNotifications(response.data.data); // Assuming the API returns notifications in a `notifications` field
       } catch (err) {
         console.error('Error fetching notifications:', err);
       }
     };
-
-    fetchNotifications();
-  }, []);
+    if (showNotifications)
+      fetchNotifications();
+  }, [currentPage, showNotifications]);
 
   // Handle Contribute/Uncontribute toggle
   const handleToggleContribute = async () => {
@@ -100,7 +116,6 @@ const Home = () => {
         await API.put('/user/changeStatus', { restaurantId: 'anything' });
         setIsContributing(false);
         fetchActiveContributors();
-        window.location.reload();
       } catch (err) {
         setError(err.response?.data?.messages[0] || 'Error toggling contribution.')
         console.error('Error toggling contribution status:', err);
@@ -155,6 +170,17 @@ const Home = () => {
     setShowNotifications(!showNotifications);
   };
 
+  // Handle pagination for notifications
+  const handleNextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="home-container">
       {/* Top Navbar */}
@@ -176,7 +202,7 @@ const Home = () => {
           <div className="top-nav-buttons">
             <button className="notification-button" onClick={toggleNotifications}>
               <span className="notification-icon">🔔</span>
-              <span className="notification-badge">{notifications.length}</span>
+              <span className="notification-badge">{noNotification}</span>
             </button>
             <div className="toggle-switch">
               <label className="switch">
@@ -211,6 +237,16 @@ const Home = () => {
               </li>
             ))}
           </ul>
+          {/* Pagination Controls */}
+          <div className="pagination">
+            <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+              Previous
+            </button>
+            <span>Page {currentPage}</span>
+            <button onClick={handleNextPage}>
+              Next
+            </button>
+          </div>
         </div>
       )}
 

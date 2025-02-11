@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto, CreateUsersNotificationsDto, CreateNotificationsByIdsDto } from '@app/common/dto/notificationDtos';
+import { FindUsersNotificationsDto } from '@app/common/dto/notificationDtos/find-user-notifications.dto';
 
 @Controller()
 export class NotificationController {
@@ -33,7 +34,12 @@ export class NotificationController {
   }
 
   @MessagePattern({ cmd: 'findAllNotification' })
-  findAll(@Payload() userId: string) {
-    return this.notificationService.findAll(userId);
+  findAll(@Payload() filter: FindUsersNotificationsDto) {
+    return this.notificationService.findAll(filter);
+  }
+
+  @MessagePattern({ cmd: 'getUnSeenNotifications' })
+  getUnSeenNotifications(@Payload() userId: string) {
+    return this.notificationService.getUnSeenNotifications(userId);
   }
 }

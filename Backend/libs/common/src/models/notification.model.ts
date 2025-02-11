@@ -1,4 +1,4 @@
-import { Column, DataType, ForeignKey, Length, NotEmpty, Table } from "sequelize-typescript";
+import { Column, DataType, Default, ForeignKey, Length, NotEmpty, Table } from "sequelize-typescript";
 import { BaseModel } from "./base.model";
 import { User } from "./user.model";
 
@@ -29,4 +29,8 @@ export class Notification extends BaseModel {
     })
     @Column(DataType.STRING)
     description: string;
+
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    seen: boolean;
 }

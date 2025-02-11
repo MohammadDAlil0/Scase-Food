@@ -22,76 +22,79 @@ services:
     ports:
       - "4222:4222"
 
-  gateway:
-    build:
-      context: .
-      dockerfile: .\apps\gateway\Dockerfile
-      target: development
-    command: pnpm run start:dev gateway
-    depends_on:
-      - nats
-      - mysql
-    ports:
-      - '3001:3001'
-    volumes:
-      - .:\usr\src\app
+  # gateway:
+  #   build:
+  #     context: .
+  #     dockerfile: .\apps\gateway\Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev gateway
+  #   depends_on:
+  #     - nats
+  #     - mysql
+  #   ports:
+  #     - '3001:3001'
+  #   volumes:
+  #     - .:\usr\src\app
 
-  food-microservice:
-    build:
-      context: .
-      dockerfile: .\apps\food-microservice\Dockerfile
-      target: development
-    command: pnpm run start:dev food-microservice
-    depends_on:
-      - nats
-      - mysql
-    volumes:
-      - .:\usr\src\app
+  # food-microservice:
+  #   build:
+  #     context: .
+  #     dockerfile: .\apps\food-microservice\Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev food-microservice
+  #   depends_on:
+  #     - nats
+  #     - mysql
+  #   volumes:
+  #     - .:\usr\src\app
 
-  notification-microservice:
-    build:
-      context: .
-      dockerfile: .\apps\notification-microservice\Dockerfile
-      target: development
-    command: pnpm run start:dev notification-microservice
-    depends_on:
-      - nats
-      - mysql
-    volumes:
-      - .:\usr\src\app
+  # notification-microservice:
+  #   build:
+  #     context: .
+  #     dockerfile: .\apps\notification-microservice\Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev notification-microservice
+  #   depends_on:
+  #     - nats
+  #     - mysql
+  #   volumes:
+  #     - .:\usr\src\app
 
-  order-microservice:
-    build:
-      context: .
-      dockerfile: .\apps\order-microservice\Dockerfile
-      target: development
-    command: pnpm run start:dev order-microservice
-    depends_on:
-      - nats
-      - mysql
-    volumes:
-      - .:\usr\src\app
+  # order-microservice:
+  #   build:
+  #     context: .
+  #     dockerfile: .\apps\order-microservice\Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev order-microservice
+  #   depends_on:
+  #     - nats
+  #     - mysql
+  #   volumes:
+  #     - .:\usr\src\app
 
-  restaurant-microservice:
-    build:
-      context: .
-      dockerfile: .\apps\restaurant-microservice\Dockerfile
-      target: development
-    command: pnpm run start:dev restaurant-microservice
-    depends_on:
-      - nats
-      - mysql
-    volumes:
-      - .:\usr\src\app
+  # restaurant-microservice:
+  #   build:
+  #     context: .
+  #     dockerfile: .\apps\restaurant-microservice\Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev restaurant-microservice
+  #   depends_on:
+  #     - nats
+  #     - mysql
+  #   volumes:
+  #     - .:\usr\src\app
 
-  user-microservice:
-    build:
-      context: .
-      dockerfile: .\apps\user-microservice\Dockerfile
-      target: development
-    command: pnpm run start:dev user-microservice
-    depends_on:
-      - nats
-      - mysql
-    volumes:
-      - .:\usr\src\app
+  # user-microservice:
+  #   build:
+  #     context: .
+  #     dockerfile: .\apps\user-microservice\Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev user-microservice
+  #   depends_on:
+  #     - nats
+  #     - mysql
+  #   volumes:
+  #     - .:\usr\src\app
+
+volumes:
+  mysql-data:

@@ -1,5 +1,6 @@
 import { Role } from '@app/common/constants';
 import { CreateNotificationDto, CreateNotificationsByIdsDto, CreateUsersNotificationsDto } from '@app/common/dto/notificationDtos';
+import { FindUsersNotificationsDto } from '@app/common/dto/notificationDtos/find-user-notifications.dto';
 import { Notification, User } from '@app/common/models';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
@@ -17,13 +18,34 @@ export class NotificationService {
     });
   }
 
-  async findAll(userId: string) {
-    return await this.NotificationModel.findAll({
+  async findAll(filter: FindUsersNotificationsDto) {
+    const limit = filter.limit || undefined;
+    const offset = (filter.page - 1) * filter.limit || undefined;
+    
+    const notifications = await this.NotificationModel.findAll({
       where: {
-        userId
+        userId: filter.userId,
       },
-      order: [['createdAt', 'DESC']],
-      limit: 5
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']]
+    });
+
+    return Promise.all(
+      notifications.map(async (notifications) => {
+        notifications.seen = true;
+        return await notifications.save();
+        
+      })
+    );
+  }
+
+  async getUnSeenNotifications(userId: string) {
+    return await this.NotificationModel.count({
+      where: {
+        userId,
+        seen: false
+      }
     });
   }
 
