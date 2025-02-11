@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional } from 'class-validator';
-import { Op } from 'sequelize';
 
 /**
  * Data Transfer Object (DTO) for pagination.

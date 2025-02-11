@@ -1,4 +1,4 @@
-import { AfterCreate, AfterFind, AllowNull, BeforeCreate, BelongsTo, Column, DataType, Default, ForeignKey, Index, Length, NotEmpty, Table, Unique } from "sequelize-typescript";
+import { AllowNull, BeforeCreate, BelongsTo, Column, DataType, Default, ForeignKey, Index, Length, NotEmpty, Table, Unique } from "sequelize-typescript";
 import * as argon from 'argon2';
 import { BadRequestException } from "@nestjs/common";
 import { BaseModel } from "./base.model";
@@ -16,20 +16,20 @@ export class User extends BaseModel {
     @NotEmpty({
         msg: 'Username must not be empty'
     })
-    @Length({max: 64})
+    @Length({ max: 64 })
     @Column(DataType.STRING)
     username: string;
 
     @Index
     @Unique(true)
-    @Length({max: 64})
+    @Length({ max: 64 })
     @Column(DataType.STRING)
     email: string;
-  
+
     @Default(Role.GHOST)
     @Column(DataType.ENUM(...Object.values(Role)))
     role: Role;
-  
+
     @Column(DataType.STRING)
     hash: string;
 
@@ -38,10 +38,10 @@ export class User extends BaseModel {
 
     @Column(DataType.STRING)
     passwordResetToken?: string;
-  
+
     @Column(DataType.DATE)
     passwordResetExpires?: Date;
-    
+
     @AllowNull
     @Column(DataType.DATE)
     dateToCall?: Date;
@@ -70,8 +70,8 @@ export class User extends BaseModel {
             throw new BadRequestException('Please provide a password when you are creating a user');
         }
     }
-    
-    createPasswordResetToken = async function() {
+
+    createPasswordResetToken = async function () {
         const resetToken = crypto.randomUUID();
 
         this.passwordResetToken = resetToken;

@@ -13,7 +13,7 @@ export class ContributorApi implements CanActivate {
   constructor(
     @InjectModel(Order) private readonly OrderModel: typeof Order,
     @Inject() private readonly dataBaseService: DataBaseService
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -55,7 +55,7 @@ export class NotMeApi implements CanActivate {
 export class StillOnGoingGuard implements CanActivate {
   constructor(
     @InjectModel(User) private readonly UserModel: typeof User,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -67,7 +67,7 @@ export class StillOnGoingGuard implements CanActivate {
         status: Status.ONGOING
       }
     });
-    
+
     if (!contributor) {
       throw new ForbiddenException('contributor has already ordered');
     }
@@ -84,13 +84,13 @@ export class StillOnGoingGuard implements CanActivate {
 export class UserOrderGuard implements CanActivate {
   constructor(
     @InjectModel(Order) private readonly OrderModel: typeof Order,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const orderId = request.body.orderId || request.params.orderId;
     const curUserId = request.user.id;
-    
+
     const order = await this.OrderModel.findOne({
       where: {
         id: orderId,
@@ -115,7 +115,7 @@ export class FoodRestauranGuard implements CanActivate {
     @Inject() private readonly dataBaseService: DataBaseService,
     @InjectModel(Order) private readonly OrderModel: typeof Order,
     @InjectModel(Food) private readonly FoodModel: typeof Food
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -123,7 +123,7 @@ export class FoodRestauranGuard implements CanActivate {
     const foodId = request.body.foodId || request.params.foodId;
     const curUserId = request.user.id;
 
-    
+
     const order: Order = await this.dataBaseService.findOneOrThrow(this.OrderModel, {
       where: {
         id: orderId,

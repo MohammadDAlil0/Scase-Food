@@ -3,12 +3,12 @@ import * as nodemailer from 'nodemailer';
 export const sendEmail = async options => {
     // 1) Create a transporter
     const transporter = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 465,
+        host: process.env.EMAIL_HOST,
+        port: process.env.PORT_HOST,
         secure: false, // use SSL
         auth: {
-            user: '0f8c6d3818f545',
-            pass: 'a356c542c1d166'
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD
         }
     });
 

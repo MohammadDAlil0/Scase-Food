@@ -10,7 +10,7 @@ export class FoodService {
     @InjectModel(Food) private readonly FoodModel: typeof Food,
     @InjectModel(FoodOrder) private readonly FoodOrderModel: typeof FoodOrder,
     @Inject() private readonly dataBaseService: DataBaseService,
-  ) {}
+  ) { }
 
 
   async create(createFoodDto: CreateFoodDto) {
@@ -22,7 +22,7 @@ export class FoodService {
   async findAll(filter: FindAllFoodDto) {
     const { page, limit, ...rest } = filter;
     return await this.FoodModel.findAll({
-      where: {...rest},
+      where: { ...rest },
       limit,
       offset: (page - 1) * limit || undefined
     });
@@ -33,10 +33,10 @@ export class FoodService {
   }
 
   async update(updateFoodDto: UpdateFoodDto) {
-      const restaurant: Food = await this.dataBaseService.findByPkOrThrow(this.FoodModel, updateFoodDto.id);
-      Object.assign(restaurant, updateFoodDto);
-      await restaurant.save();
-      return restaurant;
+    const restaurant: Food = await this.dataBaseService.findByPkOrThrow(this.FoodModel, updateFoodDto.id);
+    Object.assign(restaurant, updateFoodDto);
+    await restaurant.save();
+    return restaurant;
   }
 
   async remove(id: string) {

@@ -1,18 +1,17 @@
 import { PaginationDto } from "@app/common/dto/globalDtos";
-import { CreateUserDto, LoginDto, FindAllUsersDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto } from "@app/common/dto/userDtos";
+import { CreateUserDto, LoginDto, FindAllUsersDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto, ForgotPasswordDto } from "@app/common/dto/userDtos";
 import { User } from "@app/common/models";
 import { Controller, Inject, Post, Body, Get, Query, Put, Patch, Param } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { lastValueFrom } from "rxjs";
-import { GetUser } from "../core/decorators/get-user.decortator";
 import { SignupDecorators, LoginDecorators, GetMeDecorators, GetAllUsersDecorator, ChangeRoleDecorator, ChangeStatusDecorator, GetAllActiveContributors, GetTopContributors, ForgotPasswordDecorators } from "./decorators/user-appliers.decorator";
-import { ForgotPasswordDto } from "@app/common/dto/userDtos/forgot-password.dto";
+import { GetUser } from "../core/decorators";
 
 @Controller('user')
 export class UserController {
     constructor(
         @Inject('NATS_SERVICE') private readonly natsClient: ClientProxy,
-    ) {}
+    ) { }
 
     @Post('signup')
     @SignupDecorators()

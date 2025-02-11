@@ -5,7 +5,7 @@ import { CreateRestaurantDto, FindAllRestaurantsDto, UpdateRestaurantDto } from 
 
 @Controller()
 export class RestaurantController {
-  constructor(private readonly restaurantService: RestaurantService) {}
+  constructor(private readonly restaurantService: RestaurantService) { }
 
   @MessagePattern({ cmd: 'createRestaurant' })
   create(@Payload() createRestaurantDto: CreateRestaurantDto) {

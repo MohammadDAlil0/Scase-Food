@@ -1,17 +1,15 @@
 import { Controller, Inject } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserService } from './user.service';
-import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto } from '@app/common/dto/userDtos';
-import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
+import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto, FindAllUsersDto, ForgotPasswordDto } from '@app/common/dto/userDtos';
 import { PaginationDto } from '@app/common/dto/globalDtos';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { ForgotPasswordDto } from '@app/common/dto/userDtos/forgot-password.dto';
 
 @Controller('user')
 export class UserController {
     constructor(
-        @Inject() private readonly userService: UserService, 
-    ) {}
+        @Inject() private readonly userService: UserService,
+    ) { }
 
     @MessagePattern({ cmd: 'signup' })
     async signup(@Payload() createUserDto: CreateUserDto) {
@@ -20,7 +18,7 @@ export class UserController {
 
     @MessagePattern({ cmd: 'login' })
     async login(@Payload() loginDto: LoginDto) {
-        return this.userService.login(loginDto); 
+        return this.userService.login(loginDto);
     }
 
     @MessagePattern({ cmd: 'GetAllUsers' })

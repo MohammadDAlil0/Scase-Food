@@ -10,4 +10,4 @@ import { NatsClientModule } from '@app/common/nats-client';
   controllers: [UserController],
   providers: [JWTStrategy]
 })
-export class UserModule {}
+export class UserModule { }

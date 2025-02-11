@@ -5,9 +5,9 @@ import { NatsClientModule } from '@app/common/nats-client';
 
 @Module({
   imports: [
-    NatsClientModule, 
+    NatsClientModule,
   ],
   controllers: [OrderController],
   providers: [OrderService],
 })
-export class OrderModule {}
+export class OrderModule { }

@@ -9,14 +9,14 @@ import { lastValueFrom } from 'rxjs';
 export class RestaurantController {
   constructor(
     @Inject('NATS_SERVICE') private readonly natsClient: ClientProxy
-  ) {}
+  ) { }
 
   @Post()
   @CreateRestaurantDecorator()
   async create(@Body() createRestaurantDto: CreateRestaurantDto) {
     return await lastValueFrom(
       this.natsClient.send({ cmd: 'createRestaurant' }, createRestaurantDto)
-      
+
     );
   }
 
@@ -25,7 +25,7 @@ export class RestaurantController {
   async findAll(@Query() filter: FindAllRestaurantsDto) {
     return await lastValueFrom(
       this.natsClient.send({ cmd: 'findAllRestaurant' }, filter)
-      
+
     )
   }
 
@@ -42,7 +42,7 @@ export class RestaurantController {
   async update(@Param('id') id: string, @Body() updateRestaurantDto: UpdateRestaurantDto) {
     return await lastValueFrom(
       this.natsClient.send({ cmd: 'updateRestaurant' }, {
-        id, 
+        id,
         ...updateRestaurantDto
       })
     );

@@ -40,7 +40,6 @@ export class RestaurantService {
   }
 
   remove(id: string) {
-    console.log(id);
 
     this.dataBaseService.destroyOrThrow(this.RestaurantModel, {
       where: {

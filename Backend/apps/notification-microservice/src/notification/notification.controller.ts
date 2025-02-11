@@ -1,13 +1,11 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from '@app/common/dto/notificationDtos/create-notification.dto';
-import { CreateUsersNotificationsDto } from '@app/common/dto/notificationDtos/create-users-notifications.dto';
-import { CreateNotificationsByIdsDto } from '@app/common/dto/notificationDtos/create-notifications-by-ids.dto';
+import { CreateNotificationDto, CreateUsersNotificationsDto, CreateNotificationsByIdsDto } from '@app/common/dto/notificationDtos';
 
 @Controller()
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) { }
 
   @MessagePattern({ cmd: 'createNotification' })
   create(@Payload() createNotificationDto: CreateNotificationDto) {
@@ -23,7 +21,7 @@ export class NotificationController {
   createAdminsNotifications(@Payload() createUsersNotificationsDto: CreateUsersNotificationsDto) {
     return this.notificationService.createAdminsNotifications(createUsersNotificationsDto);
   }
-  
+
   @MessagePattern({ cmd: 'createUsersNotifications' })
   createUsersNotifications(@Payload() createUsersNotificationsDto: CreateUsersNotificationsDto) {
     return this.notificationService.createUsersNotifications(createUsersNotificationsDto);

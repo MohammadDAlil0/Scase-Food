@@ -8,7 +8,7 @@ export class FoodController {
   constructor(
     private readonly foodService: FoodService,
 
-  ) {}
+  ) { }
 
   @MessagePattern({ cmd: 'createFood' })
   create(@Payload() createFoodDto: CreateFoodDto) {

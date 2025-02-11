@@ -13,7 +13,7 @@ import { User } from "./user.model";
     ]
 })
 export class Notification extends BaseModel {
-     @ForeignKey(() => User)
+    @ForeignKey(() => User)
     @Column(DataType.UUID)
     userId: string;
 

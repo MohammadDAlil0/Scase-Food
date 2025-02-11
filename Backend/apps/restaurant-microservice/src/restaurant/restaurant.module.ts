@@ -10,4 +10,4 @@ import { NatsClientModule } from '@app/common/nats-client';
   controllers: [RestaurantController],
   providers: [RestaurantService],
 })
-export class RestaurantModule {}
+export class RestaurantModule { }

@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { NotFoundException } from '@nestjs/common';
-import { RpcException } from "@nestjs/microservices";
 
 @Injectable()
 export class DataBaseService {

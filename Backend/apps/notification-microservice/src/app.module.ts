@@ -12,4 +12,4 @@ import { DatabaseModule } from '@app/common/database';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

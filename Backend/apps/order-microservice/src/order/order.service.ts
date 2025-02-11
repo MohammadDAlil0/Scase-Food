@@ -72,9 +72,9 @@ export class OrderService {
         createdBy: userId,
       },
       include: [
-        { 
-          model: User, 
-          as: 'contributor' 
+        {
+          model: User,
+          as: 'contributor'
         },
         {
           model: Food,

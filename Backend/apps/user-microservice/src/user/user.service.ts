@@ -4,17 +4,12 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { ClientProxy } from '@nestjs/microservices';
-import { Status, StatusOfOrder } from '@app/common/constants';
+import { convertFiltersToLike, resetPasswordEmail, sendEmail, Status, StatusOfOrder } from '@app/common/constants';
 import { DataBaseService } from '@app/common/database';
-import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto } from '@app/common/dto/userDtos';
+import { CreateUserDto, LoginDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto, FindAllUsersDto, ForgotPasswordDto } from '@app/common/dto/userDtos';
 import { User, Order, Restaurant } from '@app/common/models';
-import { FindAllUsersDto } from '@app/common/dto/userDtos/find-all-users.dto';
-import { PaginationDto } from '@app/common/dto/globalDtos';
-import { convertFiltersToLike } from '@app/common/constants/filter-converter';
-import { ForgotPasswordDto } from '@app/common/dto/userDtos/forgot-password.dto';
-import { sendEmail } from '@app/common/constants/email';
-import { resetPasswordEmail } from '@app/common/constants/forgot-password-template';
 import { Op } from 'sequelize';
+import { PaginationDto } from '@app/common/dto/globalDtos';
 
 @Injectable()
 export class UserService {
@@ -225,8 +220,8 @@ export class UserService {
     const passwordResetToken = resetTokenDto.resetToken;
     const user: User = await this.dataBaseService.findOneOrThrow(this.UserModel, {
       where: {
-        passwordResetToken, 
-        passwordResetExpires: {[Op.gte]: Date.now()}
+        passwordResetToken,
+        passwordResetExpires: { [Op.gte]: Date.now() }
       },
       attributes: { include: ['hash'] }
     });

@@ -1,4 +1,4 @@
-import { applyDecorators, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { applyDecorators, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtGuard, RolesGuard } from '../../core/guards';
 import { Roles } from '../../core/decorators/roles.decorator';

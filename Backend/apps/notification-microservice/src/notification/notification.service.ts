@@ -1,6 +1,5 @@
 import { Role } from '@app/common/constants';
-import { CreateNotificationDto, CreateUsersNotificationsDto } from '@app/common/dto/notificationDtos';
-import { CreateNotificationsByIdsDto } from '@app/common/dto/notificationDtos/create-notifications-by-ids.dto';
+import { CreateNotificationDto, CreateNotificationsByIdsDto, CreateUsersNotificationsDto } from '@app/common/dto/notificationDtos';
 import { Notification, User } from '@app/common/models';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
@@ -11,7 +10,7 @@ export class NotificationService {
   constructor(
     @InjectModel(Notification) private readonly NotificationModel: typeof Notification,
     @InjectModel(User) private readonly UserModel: typeof User
-  ) {}
+  ) { }
   async create(createNotificationDto: CreateNotificationDto) {
     await this.NotificationModel.create({
       ...createNotificationDto
@@ -23,7 +22,7 @@ export class NotificationService {
       where: {
         userId
       },
-      order: [ ['createdAt', 'DESC'] ],
+      order: [['createdAt', 'DESC']],
       limit: 5
     });
   }
@@ -68,7 +67,6 @@ export class NotificationService {
     });
 
     usersIds.forEach(user => {
-      console.log(user.id);
       this.create({
         userId: user.id,
         ...createUsersNotificationsDto

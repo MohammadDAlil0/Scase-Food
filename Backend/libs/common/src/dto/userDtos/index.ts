@@ -4,3 +4,4 @@ export * from './create-user.dto';
 export * from './login.dto';
 export * from './find-all-users.dto';
 export * from './reset-password.dto';
+export * from './forgot-password.dto'

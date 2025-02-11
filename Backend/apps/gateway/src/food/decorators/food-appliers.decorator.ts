@@ -1,6 +1,6 @@
 import { applyDecorators, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { FoodRestauranGuard, JwtGuard, RolesGuard } from '../../core/guards';
+import { JwtGuard, RolesGuard } from '../../core/guards';
 import { Roles } from '../../core/decorators/roles.decorator';
 import { Role } from '@app/common/constants';
 
