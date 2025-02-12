@@ -7,18 +7,23 @@ import '../styles/Restaurants.css'; // Reuse the same CSS
 const Food = () => {
   const navigate = useNavigate();
   const [foods, setFoods] = useState([]);
-  const [restaurants, setRestaurants] = useState({}); // Store restaurant details
+  const [restaurants, setRestaurants] = useState([]); // Store all restaurants for filtering
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Fetch food items on page load
+  // Filter states
+  const [restaurantFilter, setRestaurantFilter] = useState(undefined);
+
+  // Fetch food items with filters
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const response = await API.get('/food?page=1&limit=10');
+        const params = {
+          restaurantId: restaurantFilter,
+        };
+        const response = await API.get('/food', { params });
         setFoods(response.data.data);
-        fetchRestaurants(response.data.data); // Fetch restaurant details for each food item
       } catch (err) {
         setError(err.response?.data?.messages[0] || 'Failed to fetch food items. Please try again later.');
         console.error('Error fetching food items:', err);
@@ -28,7 +33,7 @@ const Food = () => {
     };
 
     fetchFoods();
-  }, []);
+  }, [restaurantFilter]);
 
   // Fetch user role (admin or not)
   useEffect(() => {
@@ -44,20 +49,19 @@ const Food = () => {
     fetchUserRole();
   }, []);
 
-  // Fetch restaurant details for each food item
-  const fetchRestaurants = async (foods) => {
-    const restaurantDetails = {};
-    for (const food of foods) {
+  // Fetch all restaurants for the filter dropdown
+  useEffect(() => {
+    const fetchRestaurants = async () => {
       try {
-        const response = await API.get(`/restaurant/${food.restaurantId}`);
-        restaurantDetails[food.restaurantId] = response.data.data.name; // Store restaurant name
+        const response = await API.get('/restaurant');
+        setRestaurants(response.data.data);
       } catch (err) {
-        console.error(`Error fetching restaurant details for ID ${food.restaurantId}:`, err);
-        restaurantDetails[food.restaurantId] = 'Unknown Restaurant'; // Fallback if fetch fails
+        console.error('Error fetching restaurants:', err);
       }
-    }
-    setRestaurants(restaurantDetails);
-  };
+    };
+
+    fetchRestaurants();
+  }, []);
 
   // Handle Create Food
   const handleCreateFood = () => {
@@ -83,6 +87,12 @@ const Food = () => {
     }
   };
 
+  const handleRestaurantChanged = (e) => {
+    let { value } = e.target;
+    if (value === '' || !value) value = undefined;
+    setRestaurantFilter(value);
+  }
+
   return (
     <div className="home-container">
       {/* Simplified Navbar */}
@@ -91,12 +101,27 @@ const Food = () => {
       {/* Header Section */}
       <div className="header-section">
         <h1>Food</h1>
+        {/* Filter Section */}
+        <div className="restaurant-filter-section">
+          <select
+            value={restaurantFilter}
+            onChange={handleRestaurantChanged}
+          >
+            <option value="">All Restaurants</option>
+            {restaurants.map((restaurant) => (
+              <option key={restaurant.id} value={restaurant.id}>
+                {restaurant.name}
+              </option>
+            ))}
+          </select>
+        </div>
         {isAdmin && (
           <button onClick={handleCreateFood} className="create-button">
             Create New Food
           </button>
         )}
       </div>
+
 
       {/* Loading State */}
       {loading && <p>Loading food items...</p>}
@@ -116,7 +141,7 @@ const Food = () => {
             <div className="restaurant-details">
               <h2>{food.name}</h2>
               <p>Price: ${food.price}</p>
-              <p>Restaurant: {restaurants[food.restaurantId] || 'Loading...'}</p>
+              <p>Restaurant: {restaurants.find((r) => r.id === food.restaurantId)?.name || 'Unknown Restaurant'}</p>
             </div>
 
             {/* Admin Actions */}
