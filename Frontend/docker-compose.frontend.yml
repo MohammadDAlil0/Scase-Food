@@ -8,4 +8,4 @@ services:
     container_name: scase-food-frontend
     restart: always
     ports:
-      - "8080:80"  # Expose Nginx on port 8080
+      - "3000:80"  # Expose Nginx on port 3000
