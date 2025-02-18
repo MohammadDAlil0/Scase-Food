@@ -19,21 +19,6 @@ const Users = () => {
   // Calculate total number of pages
   const totalPages = Math.ceil(totalNumberOfUsers / limit);
 
-  // Fetch total number of users (without pagination)
-  useEffect(() => {
-    const fetchTotalUsers = async () => {
-      try {
-        const response = await API.get('/user/getAllUsers', { params: filters });
-        setTotalNumberOfUsers(response.data.data.length);
-      } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch users. Please try again later.');
-        console.error('Error fetching users:', err);
-      }
-    };
-
-    fetchTotalUsers();
-  }, [filters]);
-
   // Fetch users based on filters, page, and limit
   useEffect(() => {
     const fetchUsers = async () => {
@@ -41,9 +26,10 @@ const Users = () => {
         const response = await API.get('/user/getAllUsers', {
           params: { ...filters, page, limit },
         });
-        setUsers(response.data.data);
+        setUsers(response.data.data.users);
+        setTotalNumberOfUsers(response.data.data.totalUsers);
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch users. Please try again later.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch users. Please try again later.');
         console.error('Error fetching users:', err);
       } finally {
         setLoading(false);
@@ -104,6 +90,28 @@ const Users = () => {
     setPage(1); // Reset to the first page when limit changes
   };
 
+  const handleDeleteUser = async (userId) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+    if (!confirmDelete) return;
+
+    try {
+      // Call the delete API
+      await API.delete(`/user/${userId}`);
+
+      // Remove the deleted user from the local state
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+
+      // Update the total number of users
+      setTotalNumberOfUsers((prevTotal) => prevTotal - 1);
+
+      alert('User deleted successfully!');
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      const message = err.response?.data?.messages[0] || 'Failed to delete user. Please try again.';
+      alert(message);
+    }
+  };
+
   return (
     <div className="users-container">
       {/* Simplified Navbar */}
@@ -157,6 +165,7 @@ const Users = () => {
             <th>Role</th>
             <th>Number of Contributions</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -176,6 +185,9 @@ const Users = () => {
               </td>
               <td>{user.numberOfContributions}</td>
               <td>{user.status}</td>
+              <td>
+                <button  className="delete-button" onClick={() => handleDeleteUser(user.id)}>Delete</button> {/* Delete button */}
+              </td>
             </tr>
           ))}
         </tbody>

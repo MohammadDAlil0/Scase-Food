@@ -22,7 +22,7 @@ const CreateFood = () => {
         const response = await API.get('/restaurant?page=1&limit=10');
         setRestaurants(response.data.data);
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch restaurants. Please try again later.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch restaurants. Please try again later.');
         console.error('Error fetching restaurants:', err);
       }
     };
@@ -52,7 +52,7 @@ const CreateFood = () => {
       }
     } catch (err) {
       console.error('Error creating food item:', err);
-      setError(err.response?.data.messages[0] || 'Failed to create food item. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to create food item. Please try again.');
     } finally {
       setLoading(false);
     }

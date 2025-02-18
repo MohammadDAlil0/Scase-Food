@@ -33,7 +33,7 @@ const Signup = () => {
       localStorage.setItem('token', response.data.data.access_token);
       navigate('/ghost');
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Signup failed. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Signup failed. Please try again.');
     }
   };
 

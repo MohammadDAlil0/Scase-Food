@@ -1,4 +1,4 @@
-import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus, BadRequestException } from "@nestjs/common";
+import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus, BadRequestException, NotFoundException } from "@nestjs/common";
 import { of } from "rxjs";
 import { UniqueConstraintError, ValidationError, ConnectionRefusedError, ForeignKeyConstraintError } from "sequelize";
 

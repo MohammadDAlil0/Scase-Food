@@ -9,17 +9,24 @@ const MyOrders = () => {
   const [error, setError] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null); // Store selected order for modal
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [page, setPage] = useState(1); // Current page
+  const [limit, setLimit] = useState(10); // Number of Orders per page
+  const [totalNumberOfOrders, setTotalNumberOfOrders] = useState(0);
+
+   // Calculate total number of pages
+   const totalPages = Math.ceil(totalNumberOfOrders / limit);
 
   // Fetch user's orders
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await API.get('/order/GetMyOrders');
+        const response = await API.get(`/order/GetMyOrders?page=${page}&limit=${limit}`);
         console.log('Orders API Response:', response.data);
 
-        setOrders(response.data.data);
+        setOrders(response.data.data.orders);
+        setTotalNumberOfOrders(response.data.data.totalOrders)
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch orders. Please try again later.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch orders. Please try again later.');
         console.error('Error fetching orders:', err);
       } finally {
         setLoading(false);
@@ -27,7 +34,7 @@ const MyOrders = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [page, limit]);
 
   // Function to calculate total price of an order
   const calculateTotalPrice = (foods) => {
@@ -46,6 +53,19 @@ const MyOrders = () => {
   const closeModal = () => {
     setSelectedOrder(null);
     setIsModalOpen(false);
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return; // Prevent going out of bounds
+    setPage(newPage);
+  };
+
+   // Handle limit change
+   const handleLimitChange = (e) => {
+    const newLimit = Number(e.target.value);
+    setLimit(newLimit);
+    setPage(1); // Reset to the first page when limit changes
   };
 
   return (
@@ -88,6 +108,30 @@ const MyOrders = () => {
           </tbody>
         </table>
       )}
+      {/* Pagination Controls */}
+      <div className="pagination">
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages}
+        >
+          Next
+        </button>
+        <select value={limit} onChange={handleLimitChange} className='select-page'>
+          <option value={5}>5 per page</option>
+          <option value={10}>10 per page</option>
+          <option value={20}>20 per page</option>
+          <option value={50}>50 per page</option>
+        </select>
+      </div>
 
       {/* Modal for viewing order details */}
       {isModalOpen && selectedOrder && (

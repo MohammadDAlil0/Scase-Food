@@ -23,9 +23,9 @@ const Food = () => {
           restaurantId: restaurantFilter,
         };
         const response = await API.get('/food', { params });
-        setFoods(response.data.data);
+        setFoods(response.data.data.foods);
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch food items. Please try again later.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch food items. Please try again later.');
         console.error('Error fetching food items:', err);
       } finally {
         setLoading(false);
@@ -54,7 +54,7 @@ const Food = () => {
     const fetchRestaurants = async () => {
       try {
         const response = await API.get('/restaurant');
-        setRestaurants(response.data.data);
+        setRestaurants(response.data.data.restaurants);
       } catch (err) {
         console.error('Error fetching restaurants:', err);
       }

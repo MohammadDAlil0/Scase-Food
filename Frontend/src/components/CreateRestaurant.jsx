@@ -32,7 +32,7 @@ const CreateRestaurant = () => {
         navigate('/restaurants'); // Redirect to the restaurants page after successful creation
       }
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to create restaurant. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to create restaurant. Please try again.');
       console.error('Error creating restaurant:', err);
     } finally {
       setLoading(false);

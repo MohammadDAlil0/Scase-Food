@@ -21,11 +21,16 @@ export class FoodService {
 
   async findAll(filter: FindAllFoodDto) {
     const { page, limit, ...rest } = filter;
-    return await this.FoodModel.findAll({
+    const foods = await this.FoodModel.findAll({
       where: { ...rest },
       limit,
       offset: (page - 1) * limit || undefined
     });
+    const noFoods = await this.FoodModel.count({where: { ...rest }});
+    return {
+      foods,
+      noFoods
+    }
   }
 
   async findOne(id: string) {

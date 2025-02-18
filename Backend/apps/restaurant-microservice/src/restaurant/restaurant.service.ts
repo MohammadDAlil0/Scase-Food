@@ -20,11 +20,17 @@ export class RestaurantService {
 
   async findAll(filter: FindAllRestaurantsDto) {
     const { page, limit, ...rest } = filter;
-    return await this.RestaurantModel.findAll({
+    const restaurants = await this.RestaurantModel.findAll({
       where: {...rest},
       limit,
       offset: (page - 1) * limit || undefined
     });
+    const noRestaurants = await this.RestaurantModel.count({ where: { ...rest } });
+    
+    return {
+      restaurants,
+      noRestaurants
+    }
   }
 
   async findOne(id: string) {
@@ -40,7 +46,6 @@ export class RestaurantService {
   }
 
   remove(id: string) {
-
     this.dataBaseService.destroyOrThrow(this.RestaurantModel, {
       where: {
         id

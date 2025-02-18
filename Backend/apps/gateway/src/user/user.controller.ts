@@ -1,10 +1,10 @@
 import { PaginationDto } from "@app/common/dto/globalDtos";
 import { CreateUserDto, LoginDto, FindAllUsersDto, ChangeRoleDto, ChangeStatusDto, ResetPasswordDto, ForgotPasswordDto } from "@app/common/dto/userDtos";
 import { User } from "@app/common/models";
-import { Controller, Inject, Post, Body, Get, Query, Put, Patch, Param } from "@nestjs/common";
+import { Controller, Inject, Post, Body, Get, Query, Put, Patch, Param, Delete } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { lastValueFrom } from "rxjs";
-import { SignupDecorators, LoginDecorators, GetMeDecorators, GetAllUsersDecorator, ChangeRoleDecorator, ChangeStatusDecorator, GetAllActiveContributors, GetTopContributors, ForgotPasswordDecorators } from "./decorators/user-appliers.decorator";
+import { SignupDecorators, LoginDecorators, GetMeDecorators, GetAllUsersDecorator, ChangeRoleDecorator, ChangeStatusDecorator, GetAllActiveContributors, GetTopContributors, ForgotPasswordDecorators, DeleteUserDecorator, ResetPasswordDecorators } from "./decorators/user-appliers.decorator";
 import { GetUser } from "../core/decorators";
 
 @Controller('user')
@@ -38,7 +38,7 @@ export class UserController {
     }
 
     @Patch('resetPassword/:resetToken')
-    @ForgotPasswordDecorators()
+    @ResetPasswordDecorators()
     async resetPassword(@Param('resetToken') resetToken: string, @Body() resetPasswordDto: ResetPasswordDto) {
         return await lastValueFrom(
             this.natsClient.send({ cmd: 'resetPassword' }, {
@@ -58,8 +58,8 @@ export class UserController {
     @GetAllUsersDecorator()
     async getAllUsers(@Query() filter: FindAllUsersDto) {
         return await lastValueFrom(
-            this.natsClient.send({ cmd: 'GetAllUsers' }, filter)
-        )
+            this.natsClient.send({ cmd: 'getAllUsers' }, filter)
+        );
     }
 
     @Put('changeRole')
@@ -92,8 +92,16 @@ export class UserController {
     @Get('GetTopcontributors')
     @GetTopContributors()
     async getTopContributors(@Query() filter: PaginationDto) {
-        return lastValueFrom(
+        return await lastValueFrom(
             this.natsClient.send({ cmd: 'getTopContributors' }, filter)
+        );
+    }
+
+    @Delete('/:userId')
+    @DeleteUserDecorator()
+    async deleteUser(@Param('userId') userId: string) {
+        await lastValueFrom(
+            this.natsClient.emit({ cmd: 'deleteUser' }, userId)
         );
     }
 

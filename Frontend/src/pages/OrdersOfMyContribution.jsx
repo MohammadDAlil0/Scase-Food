@@ -33,7 +33,7 @@ const OrdersOfMyContribution = () => {
 
         setOrders(ordersWithTotalPrice);
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch orders. Please try again later.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch orders. Please try again later.');
         console.error('Error fetching orders:', err);
       } finally {
         setLoading(false);
@@ -63,7 +63,7 @@ const OrdersOfMyContribution = () => {
       console.log(`Food ${foodId} removed from order ${orderId}`);
     } catch (err) {
       console.log(err);
-      setError(err.response?.data?.messages[0] || 'Failed to remove food. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to remove food. Please try again.');
       console.error('Error removing food:', err);
     }
   };
@@ -84,7 +84,7 @@ const OrdersOfMyContribution = () => {
 
       console.log(`Status updated for order ${orderId}: ${newStatus}`);
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to update status. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to update status. Please try again.');
       console.error('Error updating status:', err);
     }
   };

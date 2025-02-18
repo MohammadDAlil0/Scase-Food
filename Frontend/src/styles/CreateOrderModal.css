@@ -1,85 +1,86 @@
 .create-order-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .create-order-modal {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 500px;
-  }
-  
-  .create-order-modal h3 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #007bff;
-  }
-  
-  .create-order-food-list,
-  .create-order-selected-foods {
-    margin-bottom: 20px;
-  }
-  
-  .create-order-food-list ul,
-  .create-order-selected-foods ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .create-order-food-list li,
-  .create-order-selected-foods li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .create-order-food-list button,
-  .create-order-selected-foods button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .create-order-selected-foods button {
-    background-color: #dc3545;
-  }
-  
-  .create-order-form-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-  }
-  
-  .create-order-form-buttons button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .create-order-form-buttons button:first-child {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  .create-order-form-buttons button:last-child {
-    background-color: #dc3545;
-    color: white;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.create-order-modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  position: relative; /* Ensure modal is positioned correctly */
+}
+
+.create-order-modal h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #007bff;
+}
+
+.create-order-food-list,
+.create-order-selected-foods {
+  margin-bottom: 20px;
+}
+
+.create-order-food-list ul,
+.create-order-selected-foods ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.create-order-food-list li,
+.create-order-selected-foods li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.create-order-food-list button,
+.create-order-selected-foods button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.create-order-selected-foods button {
+  background-color: #dc3545;
+}
+
+.create-order-form-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.create-order-form-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.create-order-form-buttons button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.create-order-form-buttons button:last-child {
+  background-color: #dc3545;
+  color: white;
+}

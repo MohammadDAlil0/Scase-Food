@@ -1,4 +1,4 @@
-import { IntersectionType } from "@nestjs/swagger";
+import { IntersectionType, PartialType } from "@nestjs/swagger";
 import { PaginationDto } from "../globalDtos";
 import { Exclude } from "class-transformer";
 import { IsOptional } from "class-validator";
@@ -10,7 +10,7 @@ import { IsOptional } from "class-validator";
  * - Excluded fields userId.
  * - Pagination fields from `PaginationDto` (`page`, `limit`).
  */
-export class FindUsersNotificationsDto extends PaginationDto{
+export class FindUsersNotificationsDto extends PartialType(PaginationDto) {
   /**
    * The ID of the user.
    */

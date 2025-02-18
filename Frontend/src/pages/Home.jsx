@@ -1,276 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
-import ContributorCard from '../components/ContributorCard';
 import '../styles/Home.css';
+import ContributorCard from '../components/ContributorCard';
+import MainNavBar from '../components/MainNavBar';
 
 const Home = () => {
-  const navigate = useNavigate();
   const [activeContributors, setActiveContributors] = useState([]);
   const [topContributors, setTopContributors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [contributionError, setcontributionError] = useState('');
-  const [isContributing, setIsContributing] = useState(false);
-  const [restaurants, setRestaurants] = useState([]);
-  const [selectedRestaurant, setSelectedRestaurant] = useState('');
-  const [dateToCall, setDateToCall] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [noNotification, setNoNotitfications] = useState(0);
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
 
-  // Fetch user status on page load
   useEffect(() => {
-    const fetchUserStatus = async () => {
+    const fetchData = async () => {
       try {
-        const response = await API.get('/user/me');
-        setIsContributing(response.data.data.status === 'ONGOING');
+        const [activeResponse, topResponse] = await Promise.all([
+          API.get('/user/getAllActiveContributors'),
+          API.get('/user/GetTopContributors?page=1&limit=10'),
+        ]);
+        setActiveContributors(activeResponse.data.data.contributors);
+        setTopContributors(topResponse.data.data);
       } catch (err) {
-        console.error('Error fetching user status:', err);
-      }
-    };
-
-    fetchUserStatus();
-  }, []);
-
-  // Fetch active contributors
-  useEffect(() => {
-    const fetchActiveContributors = async () => {
-      try {
-        const response = await API.get('/user/getAllActiveContributors');
-        setActiveContributors(response.data.data);
-      } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch active contributors. Please try again later.');
-        console.error('Error fetching active contributors:', err);
-      }
-    };
-
-    fetchActiveContributors();
-  }, []);
-
-  // Fetch top contributors
-  useEffect(() => {
-    const fetchTopContributors = async () => {
-      try {
-        const response = await API.get('/user/GetTopContributors?page=1&limit=10');
-        setTopContributors(response.data.data);
-      } catch (err) {
-        console.error('Error fetching top contributors:', err);
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch data. Please try again later.');
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTopContributors();
-  }, [isContributing]);
-
-  // Fetch restaurants
-  useEffect(() => {
-    const fetchRestaurants = async () => {
-      try {
-        const response = await API.get('/restaurant');
-        setRestaurants(response.data.data);
-      } catch (err) {
-        console.error('Error fetching restaurants:', err);
-      }
-    };
-
-    fetchRestaurants();
+    fetchData();
   }, []);
-
-  // Fetch unseen notification count
-  useEffect(() => {
-    const fetchNoNotifications = async () => {
-      try {
-        const response = await API.get('/Notification/CountUnseendNotfication');
-        setNoNotitfications(response.data.data.count);
-      } catch (err) {
-        console.error('Error fetching unseen notification count:', err);
-      }
-    };
-
-    fetchNoNotifications();
-  }, [isContributing, notifications]);
-
-  // Fetch notifications with pagination
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await API.get(`/Notification?page=${currentPage}&limit=5`);
-        setNotifications(response.data.data); // Assuming the API returns notifications in a `notifications` field
-      } catch (err) {
-        console.error('Error fetching notifications:', err);
-      }
-    };
-    if (showNotifications)
-      fetchNotifications();
-  }, [currentPage, showNotifications]);
-
-  // Handle Contribute/Uncontribute toggle
-  const handleToggleContribute = async () => {
-    if (isContributing) {
-      try {
-        await API.put('/user/changeStatus', { restaurantId: 'anything' });
-        setIsContributing(false);
-        fetchActiveContributors();
-      } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Error toggling contribution.')
-        console.error('Error toggling contribution status:', err);
-      }
-    } else {
-      setShowForm(true);
-    }
-  };
-
-  // Handle Logout button
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  }
-
-  // Handle form submission
-  const handleFormSubmit = async () => {
-    try {
-      await API.put('/user/changeStatus', {
-        restaurantId: selectedRestaurant,
-        dateToCall: dateToCall || null,
-      });
-      setIsContributing(true);
-      setShowForm(false);
-      fetchActiveContributors();
-    } catch (err) {
-      setcontributionError(err.response?.data?.messages[0] || 'Error submitting contribution.')
-      console.error('Error submitting contribution form:', err);
-    }
-  };
-
-  // Handle form cancellation
-  const handleFormCancel = () => {
-    setShowForm(false);
-    setIsContributing(false);
-    setcontributionError('');
-  };
-
-  // Reusable function to fetch active contributors
-  const fetchActiveContributors = async () => {
-    try {
-      const response = await API.get('/user/getAllActiveContributors?page=1&limit=10');
-      setActiveContributors(response.data.data);
-    } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to fetch active contributors. Please try again later.');
-      console.error('Error fetching active contributors:', err);
-    }
-  };
-
-  // Toggle notifications dropdown
-  const toggleNotifications = () => {
-    setShowNotifications(!showNotifications);
-  };
-
-  // Handle pagination for notifications
-  const handleNextPage = () => {
-    setCurrentPage(currentPage + 1);
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
 
   return (
     <div className="home-container">
-      {/* Top Navbar */}
-      <nav className="top-navbar">
-        {/* Left Section: Sidebar Toggle Button */}
-        <div className="top-navbar-element left">
-          <button className="sidebar-toggle" onClick={() => setShowSidebar(!showSidebar)}>
-            ☰
-          </button>
-        </div>
+      <MainNavBar />
 
-        {/* Center Section: Logo */}
-        <div className="top-navbar-element center">
-          <img src="https://hrms.lit-co.net/web/image/website/1/logo/SCASE?unique=2cf4f07" alt="Logo" className="logo" />
-        </div>
-
-        {/* Right Section: Notification, Toggle Switch, Logout */}
-        <div className="top-navbar-element right">
-          <div className="top-nav-buttons">
-            <button className="notification-button" onClick={toggleNotifications}>
-              <span className="notification-icon">🔔</span>
-              <span className="notification-badge">{noNotification}</span>
-            </button>
-            <div className="toggle-switch">
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={isContributing}
-                  onChange={handleToggleContribute}
-                />
-                <span className="slider round"></span>
-              </label>
-              <span className="toggle-label">
-                {isContributing ? 'Uncontribute' : 'Contribute'}
-              </span>
-            </div>
-            <button onClick={handleLogout} className="logout-button">
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Notifications Dropdown */}
-      {showNotifications && (
-        <div className="notifications-dropdown">
-          <h3>Notifications</h3>
-          <ul>
-            {notifications.map((notification) => (
-              <li key={notification.id}>
-                <strong>{notification.title}</strong>
-                <p>{notification.description}</p>
-                <small>{new Date(notification.createdAt).toLocaleString()}</small>
-              </li>
-            ))}
-          </ul>
-          {/* Pagination Controls */}
-          <div className="pagination">
-            <button onClick={handlePreviousPage} disabled={currentPage === 1}>
-              Previous
-            </button>
-            <span>Page {currentPage}</span>
-            <button onClick={handleNextPage}>
-              Next
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Sidebar */}
-      {showSidebar && (
-        <>
-          <div className="sidebar-overlay" onClick={() => setShowSidebar(false)}></div>
-          <div className={`sidebar ${showSidebar ? 'open' : ''}`}>
-            <button className="sidebar-close" onClick={() => setShowSidebar(false)}>
-              ✕
-            </button>
-            <ul>
-              <li onClick={() => navigate('/')}>Home</li>
-              <li onClick={() => navigate('/users')}>Users</li>
-              <li onClick={() => navigate('/myOrders')}>My Orders</li>
-              <li onClick={() => navigate('/restaurants')}>Restaurants</li>
-              <li onClick={() => navigate('/food')}>Food</li>
-              <li onClick={() => navigate('/ordersOfMyContribution')}>Orders of My Contribution</li>
-            </ul>
-          </div>
-        </>
-      )}
-
-      {/* Body */}
       <div className="body">
         <div className="active-contributors">
           <h2>Active Contributors</h2>
@@ -296,7 +59,7 @@ const Home = () => {
           ) : (
             <ul>
               {topContributors.map((contributor, index) => (
-                <li key={contributor.id}>
+                <li key={`${contributor.id}-${index}`}>
                   <span>{index + 1}. {contributor.username}</span>
                   <span>Contributions: {contributor.numberOfContributions}</span>
                 </li>
@@ -305,43 +68,6 @@ const Home = () => {
           )}
         </div>
       </div>
-
-      {/* Modal for Contribute Form */}
-      {showForm && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Contribute</h3>
-            {contributionError && <p className="error-message">{contributionError}</p>}
-            <label>
-              Restaurant:
-              <select
-                value={selectedRestaurant}
-                onChange={(e) => setSelectedRestaurant(e.target.value)}
-                required
-              >
-                <option value="">Select a restaurant</option>
-                {restaurants.map((restaurant) => (
-                  <option key={restaurant.id} value={restaurant.id}>
-                    {restaurant.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Date to Call (optional):
-              <input
-                type="datetime-local"
-                value={dateToCall}
-                onChange={(e) => setDateToCall(e.target.value)}
-              />
-            </label>
-            <div className="form-buttons">
-              <button onClick={handleFormSubmit}>OK</button>
-              <button onClick={handleFormCancel}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

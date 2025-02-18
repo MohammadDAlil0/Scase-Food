@@ -34,7 +34,7 @@ const Login = () => {
         navigate('/'); // Redirect to the dashboard for other roles
       }
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Login failed. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Login failed. Please try again.');
     }
   };
 

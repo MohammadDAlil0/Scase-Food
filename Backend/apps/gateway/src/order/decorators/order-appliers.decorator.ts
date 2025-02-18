@@ -97,6 +97,7 @@ export function AddFoodDecorators() {
     return applyDecorators(
         ApiOperation({ summary: 'Add Food To Order' }),
         ApiResponse({ status: HttpStatus.OK, description: 'You will get a message' }),
+        ApiBearerAuth(),
         UseGuards(JwtGuard, RolesGuard, FoodRestauranGuard),
         Roles(Role.ADMIN, Role.USER),
     );
@@ -116,6 +117,7 @@ export function DeleteFoodFromOrderDecorators() {
     return applyDecorators(
         ApiOperation({ summary: 'Delete Food From Order' }),
         ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'You will get the deleted food from order' }),
+        ApiBearerAuth(),
         UseGuards(JwtGuard, RolesGuard, FoodRestauranGuard),
         Roles(Role.ADMIN, Role.USER),
         HttpCode(HttpStatus.NO_CONTENT),

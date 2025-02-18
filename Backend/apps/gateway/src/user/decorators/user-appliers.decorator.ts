@@ -39,13 +39,13 @@ export function LoginDecorators() {
  * 
  * @returns {MethodDecorator} A set of decorators including:
  * - `ApiOperation` with a summary of "Forgot Password".
- * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will recive a message. Check your mail box".
+ * - `ApiResponse` with a status of `HttpStatus.OK` and a description of "You will receive a message. Check your mailbox.".
  * - `HttpCode(HttpStatus.OK)` to set the HTTP status code to 200.
  */
 export function ForgotPasswordDecorators() {
   return applyDecorators(
     ApiOperation({ summary: 'Forgot Your Password' }),
-    ApiResponse({ status: HttpStatus.OK, description: 'You will recive a message. Check your mail box' }),
+    ApiResponse({ status: HttpStatus.OK, description: 'You will receive a message. Check your mailbox.' }),
     HttpCode(HttpStatus.OK),
   );
 }
@@ -201,5 +201,25 @@ export function GetTopContributors() {
     ApiBearerAuth(),
     UseGuards(JwtGuard, RolesGuard),
     Roles(Role.ADMIN, Role.USER),
+  );
+}
+
+/**
+ * Decorator for the "Delete User" endpoint.
+ *
+ * @returns {MethodDecorator} A set of decorators including:
+ * - `ApiOperation` with a summary of "Delete User".
+ * - `ApiResponse` with a status of `HttpStatus.NO_CONTENT`.
+ * - `Roles(Role.ADMIN)` to restrict access to users with the `ADMIN` role.
+ * - `HttpCode(HttpStatus.NO_CONTENT)` to set the HTTP status code to 204.
+ */
+export function DeleteUserDecorator() {
+  return applyDecorators(
+    ApiOperation({ summary: 'Delete User' }),
+    ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'You will not get anything' }),
+    ApiBearerAuth(),
+    UseGuards(JwtGuard, RolesGuard),
+    Roles(Role.ADMIN),
+    HttpCode(HttpStatus.NO_CONTENT),
   );
 }

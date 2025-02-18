@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CreateOrderModal from './CreateOrderModal'; // We'll create this next
+import '../styles/ContributorCard.css';
 
 const ContributorCard = ({ contributor }) => {
   const [showModal, setShowModal] = useState(false);

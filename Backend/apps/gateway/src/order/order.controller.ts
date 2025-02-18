@@ -40,9 +40,12 @@ export class OrderController {
 
   @Get('GetMyOrders')
   @GetMyOrdersDecorators()
-  async getMyOrders(@GetUser() curUser: User) {
+  async getMyOrders(@GetUser('id') userId: User, @Query() filter: PaginationDto) {
     return await lastValueFrom(
-      this.natsClient.send({ cmd: 'getMyOrders' }, curUser.id)
+      this.natsClient.send({ cmd: 'getMyOrders' }, {
+        ...filter,
+        userId
+      })
     );
   }
 

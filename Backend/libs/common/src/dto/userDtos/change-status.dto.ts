@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MinDate } from 'class-validator';
 
 /**
  * Data Transfer Object (DTO) for changing the status of an entity.
@@ -24,6 +24,9 @@ export class ChangeStatusDto {
     type: Date,
   })
   @IsOptional()
+  @MinDate(new Date(Date.now() + 5 * 60 * 1000), {
+    message: `${new Date(Date.now() + 5 * 60 * 1000)} minutes in the future`,
+  })
   @Type(() => Date)
   dateToCall?: Date;
 
@@ -36,7 +39,7 @@ export class ChangeStatusDto {
     example: 'xxxx-xxxx',
   })
   @IsString()
-  @IsOptional()
+  @IsOptional() // Since The same API can be used to contribute and uncontribute 
   @IsNotEmpty()
   restaurantId?: string;
 }

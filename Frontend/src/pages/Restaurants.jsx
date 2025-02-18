@@ -16,9 +16,9 @@ import '../styles/Restaurants.css';
       const fetchRestaurants = async () => {
         try {
           const response = await API.get('/restaurant?page=1&limit=10');
-          setRestaurants(response.data.data);
+          setRestaurants(response.data.data.restaurants);
         } catch (err) {
-          setError(err.response?.data?.messages[0] || 'Failed to fetch restaurants. Please try again later.');
+          setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch restaurants. Please try again later.');
           console.error('Error fetching restaurants:', err);
         } finally {
           setLoading(false);

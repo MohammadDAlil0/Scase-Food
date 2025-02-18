@@ -22,7 +22,7 @@ const UpdateRestaurant = () => {
         const response = await API.get(`/restaurant/${id}`);
         setFormData(response.data.data); // Pre-fill the form with existing data
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch restaurant details. Please try again.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch restaurant details. Please try again.');
         console.error('Error fetching restaurant:', err);
       }
     };
@@ -48,7 +48,7 @@ const UpdateRestaurant = () => {
         navigate('/restaurants'); // Redirect to the restaurants page after successful update
       }
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to update restaurant. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to update restaurant. Please try again.');
       console.error('Error updating restaurant:', err);
     } finally {
       setLoading(false);

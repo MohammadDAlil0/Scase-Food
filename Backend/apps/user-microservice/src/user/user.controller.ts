@@ -21,7 +21,17 @@ export class UserController {
         return this.userService.login(loginDto);
     }
 
-    @MessagePattern({ cmd: 'GetAllUsers' })
+    @MessagePattern({ cmd: 'forgotPassword' })
+    forgotPassword(@Payload() forgotPasswordDto: ForgotPasswordDto) {
+        return this.userService.forgotPassword(forgotPasswordDto);
+    }
+
+    @MessagePattern({ cmd: 'resetPassword' })
+    resetPassword(@Payload() resetPasswordDto: ResetPasswordDto) {
+        return this.userService.resetPassword(resetPasswordDto);
+    }
+
+    @MessagePattern({ cmd: 'getAllUsers' })
     async getAllUsers(@Payload() filter: FindAllUsersDto) {
         return this.userService.getAllUsers(filter);
     }
@@ -47,14 +57,9 @@ export class UserController {
         return this.userService.getTopContributors(filter);
     }
 
-    @MessagePattern({ cmd: 'forgotPassword' })
-    forgotPassword(@Payload() forgotPasswordDto: ForgotPasswordDto) {
-        return this.userService.forgotPassword(forgotPasswordDto);
-    }
-
-    @MessagePattern({ cmd: 'resetPassword' })
-    resetPassword(@Payload() resetPasswordDto: ResetPasswordDto) {
-        return this.userService.resetPassword(resetPasswordDto);
+    @MessagePattern({ cmd: 'deleteUser' })
+    deleteUser(@Payload() userId: string) {
+        return this.userService.deleteUser(userId);
     }
 
     /**

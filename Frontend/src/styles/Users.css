@@ -71,7 +71,7 @@
 .users-table td {
   padding: 12px;
   border: 1px solid #ddd;
-  text-align: left;
+  text-align: center;
 }
 
 .users-table th {
@@ -143,3 +143,4 @@
   color: #333;
   font-weight: bold;
 }
+

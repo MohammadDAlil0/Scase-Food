@@ -17,9 +17,9 @@ const CreateOrderModal = ({ contributor, onClose }) => {
       try {
         const response = await API.get(`/food?restaurantId=${contributor.restaurantId}&page=1&limit=10`);
         console.log('Foods API Response:', response.data);
-        setFoods(response.data.data);
+        setFoods(response.data.data.foods);
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch foods. Please try again later.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch foods. Please try again later.');
         console.error('Error fetching foods:', err);
       } finally {
         setLoading(false);
@@ -52,7 +52,7 @@ const CreateOrderModal = ({ contributor, onClose }) => {
       }
       setError('');
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to add food. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to add food. Please try again.');
       console.error('Error adding food:', err);
     } finally {
       setIsAddingFood(false);
@@ -74,7 +74,7 @@ const CreateOrderModal = ({ contributor, onClose }) => {
       }
       setError('');
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to remove food. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to remove food. Please try again.');
       console.error('Error removing food:', err);
     } finally {
       setIsRemovingFood(false);
@@ -102,13 +102,14 @@ const CreateOrderModal = ({ contributor, onClose }) => {
       alert('Order submitted successfully!');
       onClose(); // Close the modal after successful submission
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to submit order. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to submit order. Please try again.');
       console.error('Error submitting order:', err);
     } finally {
       setIsSubmittingOrder(false);
       window.location.reload();
     }
   };
+  
 
   // Calculate grand total
   const grandTotal = selectedFoods.reduce((total, food) => total + food.price * food.number, 0);

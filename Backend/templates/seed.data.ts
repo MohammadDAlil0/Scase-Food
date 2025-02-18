@@ -10,13 +10,13 @@ dotenv.config();
 // Initialize Sequelize
 const sequelize = new Sequelize({
   dialect: 'mysql',
-  host: process.env.DATA_BASE_HOST_DEVELOPMENT, // Use environment variables
-  port: parseInt(process.env.DATA_BASE_PORT_DEVELOPMENT, 10),
-  username: process.env.DATA_BASE_USERNAME_DEVELOPMENT,
-  password: process.env.DATA_BASE_PASSWORD_DEVELOPMENT,
-  database: process.env.DATA_BASE_NAME_DEVELOPMENT,
+  host: process.env.DATA_BASE_HOST, // Use environment variables
+  port: parseInt(process.env.DATA_BASE_PORT, 10),
+  username: process.env.DATA_BASE_USERNAME,
+  password: process.env.DATA_BASE_PASSWORD,
+  database: process.env.DATA_BASE_NAME,
   models: [User, Restaurant, Food, Order, FoodOrder, Notification], // Register your models here
-  logging: process.env.DATA_BASE_LOGGING_DEVELOPMENT === 'true' ? console.log : false,
+  logging: process.env.DATA_BASE_LOGGING === 'true' ? console.log : false,
 });
 
 async function seedData() {

@@ -19,13 +19,13 @@ const AddFoodsModal = ({ order, onClose }) => {
 
         console.log('Foods API Response:', response.data);
         // Filter out foods that already exist in prevFoods
-        const filteredFoods = response.data.data.filter((food) =>
+        const filteredFoods = response.data.data.foods.filter((food) =>
           order.foods.find((oldFood => oldFood.id === food.id)) ? false : true
         );
 
         setFoods(filteredFoods);
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch foods. Please try again later.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch foods. Please try again later.');
         console.error('Error fetching foods:', err);
       } finally {
         setLoading(false);
@@ -58,7 +58,7 @@ const AddFoodsModal = ({ order, onClose }) => {
       }
       setError('');
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to add food. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to add food. Please try again.');
       console.error('Error adding food:', err);
     } finally {
       setIsAddingFood(false);
@@ -80,7 +80,7 @@ const AddFoodsModal = ({ order, onClose }) => {
       }
       setError('');
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to remove food. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to remove food. Please try again.');
       console.error('Error removing food:', err);
     } finally {
       setIsRemovingFood(false);
@@ -100,7 +100,7 @@ const AddFoodsModal = ({ order, onClose }) => {
       })
       await Promise.all(selectedFoodPromise);
     } catch (err) {
-      setError(err.response?.data?.messages[0], 'Failed to submit order. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to submit order. Please try again.');
       console.error('Error submitting order:', err);
     } finally {
       setIsSubmittingOrder(false);

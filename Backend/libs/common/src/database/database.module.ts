@@ -9,18 +9,17 @@ import { User, Order, FoodOrder, Food, Restaurant, Notification } from "../model
   imports: [
     SequelizeModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
-        const nodeEnv = configService.getOrThrow('NODE_ENV');
         return  {
           dialect: 'mysql',
-          host: configService.getOrThrow(`DATA_BASE_HOST_${nodeEnv}`),
-          port: parseInt(configService.getOrThrow(`DATA_BASE_PORT_${nodeEnv}`), 10),
-          username: configService.getOrThrow(`DATA_BASE_USERNAME_${nodeEnv}`),
-          password: configService.getOrThrow(`DATA_BASE_PASSWORD_${nodeEnv}`),
-          database: configService.getOrThrow(`DATA_BASE_NAME_${nodeEnv}`),
+          host: configService.getOrThrow(`DATA_BASE_HOST`),
+          port: parseInt(configService.getOrThrow(`DATA_BASE_PORT`), 10),
+          username: configService.getOrThrow(`DATA_BASE_USERNAME`),
+          password: configService.getOrThrow(`DATA_BASE_PASSWORD`),
+          database: configService.getOrThrow(`DATA_BASE_NAME`),
           autoLoadModels: true,
           synchronize: true,
           // sync: {force: true},
-          logging: configService.getOrThrow(`DATA_BASE_LOGGING_${nodeEnv}`) === 'true' ? console.log : false,
+          logging: configService.getOrThrow(`DATA_BASE_LOGGING`) === 'true' ? console.log : false,
         }
       },
       inject: [ConfigService],

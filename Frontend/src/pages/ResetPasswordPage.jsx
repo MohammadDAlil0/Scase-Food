@@ -35,7 +35,7 @@ const ResetPasswordPage = () => {
         }, 1000);
       }
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to reset password. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to reset password. Please try again.');
       setSuccess('');
     }
   };

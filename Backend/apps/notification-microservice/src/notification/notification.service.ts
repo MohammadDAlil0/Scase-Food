@@ -22,7 +22,7 @@ export class NotificationService {
     const limit = filter.limit || undefined;
     const offset = (filter.page - 1) * filter.limit || undefined;
     
-    const notifications = await this.NotificationModel.findAll({
+    const notificationsAs = await this.NotificationModel.findAll({
       where: {
         userId: filter.userId,
       },
@@ -31,13 +31,20 @@ export class NotificationService {
       order: [['createdAt', 'DESC']]
     });
 
-    return Promise.all(
-      notifications.map(async (notifications) => {
+    const notifications = await Promise.all(
+      notificationsAs.map(async (notifications) => {
         notifications.seen = true;
         return await notifications.save();
         
       })
     );
+    
+    const noNotifications = await this.NotificationModel.count({ where: { userId: filter.userId } });
+
+    return {
+      notifications,
+      noNotifications
+    }
   }
 
   async getUnSeenNotifications(userId: string) {

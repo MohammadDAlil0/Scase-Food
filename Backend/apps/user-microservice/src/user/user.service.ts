@@ -22,15 +22,16 @@ export class UserService {
     @Inject() private readonly dataBaseService: DataBaseService,
   ) { }
 
-  async signup(createUserDto: CreateUserDto) {
+  async signup(createUserDto: CreateUserDto): Promise<Object> {
     const user = await this.UserModel.create<User>({ ...createUserDto, hash: createUserDto.password });
     const access_token = await this.getToken(user.id, user.email);
     this.natsClient.emit({ cmd: 'createAdminsNotifications' }, {
       title: 'New User',
-      description: 'A new user has been signup please accept his request or refuse him. 😀'
+      description: 'A new user has signed up. Please accept his request by changing his role or ignore this message. 😊'
     });
     return {
       ...user.dataValues,
+      hash: undefined,  // To overide the hash attribute
       access_token
     }
   }
@@ -57,14 +58,66 @@ export class UserService {
     }
   }
 
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const user: User = await this.dataBaseService.findOneOrThrow(this.UserModel, {
+      where: {
+        email: forgotPasswordDto.email
+      }
+    });
+
+    const resetToken = await user.createPasswordResetToken();
+    await user.save({ validate: false });
+
+    const resetURL = `${this.config.getOrThrow('CLIENT_PROTOCOL')}://${this.config.getOrThrow('CLIENT_HOST')}:${this.config.getOrThrow('CLIENT_PORT')}/reset-password/${resetToken}`;
+
+    const message = resetPasswordEmail.replace('{{resetURL}}', resetURL);
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Your password reset token is valid for 10 min',
+        message: message
+      });
+      return 'Token sent to the email'
+    } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save({ validate: false });
+      throw new HttpException('There was an error sending the email. Try again later!', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async resetPassword(resetTokenDto: ResetPasswordDto) {
+    const passwordResetToken = resetTokenDto.resetToken;
+    const user: User = await this.dataBaseService.findOneOrThrow(this.UserModel, {
+      where: {
+        passwordResetToken,
+        passwordResetExpires: { [Op.gte]: Date.now() }
+      },
+      attributes: { include: ['hash'] }
+    });
+    if (resetTokenDto.password !== resetTokenDto.confirmPassword) {
+      throw new BadRequestException("Passwords don't match!")
+    }
+    user.hash = await argon.hash(resetTokenDto.password);
+    user.passwordResetToken = user.passwordResetExpires = undefined;
+    await user.save();
+    return user;
+  }
+
   async getAllUsers(filter: FindAllUsersDto) {
     const { page, limit, ...rest } = filter;
     const offset = (filter.page - 1) * filter.limit || undefined;
-    return await this.UserModel.findAll({
+    const users = await this.UserModel.findAll({
       where: convertFiltersToLike(rest),
       limit,
       offset
     });
+    const noUsers = await this.UserModel.count({where: convertFiltersToLike(rest)});
+    return {
+      users,
+      totalUsers: noUsers
+    }
   }
 
   async changeRole(changeRoleDto: ChangeRoleDto) {
@@ -130,19 +183,18 @@ export class UserService {
         .filter((order) => order.statusOfOrder === StatusOfOrder.UNPAIED)
         .map((order) => order.id);
 
-      const notMeOrders = orders.filter((order) => order.createdBy !== order.contributorId);
-
-      if (notMeOrders.length > 0) {
-        getUser.numberOfContributions++;
-      }
-      else {
+      const notMeOrders = orders.find((order) => order.createdBy !== order.contributorId);
+      
+      if (!notMeOrders) {
         this.OrderModel.destroy({
           where: {
             contributorId: getUser.id,
             numberOfContributions: getUser.numberOfContributions
           }
-        })
+        });
+        return await getUser.save();
       }
+      getUser.numberOfContributions++;
       await getUser.save();
 
       this.natsClient.emit({ cmd: 'createNotificationosByIds' }, {
@@ -161,6 +213,7 @@ export class UserService {
   }
 
   async getAllActiveContributors(filter: PaginationDto) {
+    console.log(filter);
     const limit = filter.limit || undefined;
     const offset = (filter.page - 1) * filter.limit || undefined;
     const contributors = await this.UserModel.findAll<User>({
@@ -172,7 +225,12 @@ export class UserService {
         as: 'restaurant'
       }]
     });
-    return contributors;
+    const noContributors = await this.UserModel.count({ where: {status: Status.ONGOING } });
+
+    return {
+      contributors,
+      noContributors
+    };
   }
 
   async getTopContributors(filter: PaginationDto) {
@@ -186,60 +244,19 @@ export class UserService {
     return contributors;
   }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const user: User = await this.dataBaseService.findOneOrThrow(this.UserModel, {
-      where: {
-        email: forgotPasswordDto.email
-      }
-    });
-
-    const resetToken = await user.createPasswordResetToken();
-    await user.save({ validate: false });
-
-    const resetURL = `${this.config.getOrThrow('CLIENT_PROTOCOL')}://${this.config.getOrThrow('CLIENT_HOST')}:${this.config.getOrThrow('CLIENT_PORT')}/reset-password/${resetToken}`;
-
-    const message = resetPasswordEmail.replace('{{resetURL}}', resetURL);
-
-    try {
-      await sendEmail({
-        email: user.email,
-        subject: 'Your password reset token is valid for 10 min',
-        message: message
-      });
-      return 'Token sent to the email'
-    } catch (err) {
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
-      await user.save({ validate: false });
-      throw new HttpException('There was an error sending the email. Try again later!', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  async resetPassword(resetTokenDto: ResetPasswordDto) {
-    const passwordResetToken = resetTokenDto.resetToken;
-    const user: User = await this.dataBaseService.findOneOrThrow(this.UserModel, {
-      where: {
-        passwordResetToken,
-        passwordResetExpires: { [Op.gte]: Date.now() }
-      },
-      attributes: { include: ['hash'] }
-    });
-    if (resetTokenDto.password !== resetTokenDto.confirmPassword) {
-      throw new BadRequestException("Passwords don't match!")
-    }
-    user.hash = await argon.hash(resetTokenDto.password);
-    user.passwordResetToken = user.passwordResetExpires = undefined;
-    await user.save();
-    return user;
-  }
-
   async uncontributeForgettens() {
-    const Contributors: User[] = await this.getAllActiveContributors({});
-    Contributors.forEach(el => {
+    const contributors: User[] = (await this.getAllActiveContributors({})).contributors;
+    contributors.forEach(el => {
       if (el.status === Status.ONGOING && el.dateToCall < new Date(Date.now() - 3 * 60 * 60 * 1000)) { //Uncontribute who is still on-going and it has been 3 hours
         this.changeStatus({ userId: el.id });
         console.log(`${el.username} "has automatically uncontributed`);
       }
+    });
+  }
+
+  async deleteUser(userId: string) {
+    await this.dataBaseService.destroyOrThrow(this.UserModel, {
+      where: {id: userId}
     });
   }
 }

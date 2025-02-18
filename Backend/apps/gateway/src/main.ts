@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import { badRequestExceptionFilter, httpExceptionFilter } from '@app/common/filters';
 import { RpcResponseInterceptor } from '@app/common/interceptors';
 import { Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -36,6 +37,9 @@ async function bootstrap() {
   app.useGlobalFilters(new httpExceptionFilter, new badRequestExceptionFilter);
   app.useGlobalInterceptors(new RpcResponseInterceptor);
   // Run The Application
-  await app.listen(process.env.SERVER_PORT ?? 3000);
+
+  const configService = app.get(ConfigService);
+
+  await app.listen(configService.getOrThrow('SERVER_PORT') ?? 3000);
 }
 bootstrap();

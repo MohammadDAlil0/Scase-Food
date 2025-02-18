@@ -23,7 +23,7 @@ const UpdateFood = () => {
         const response = await API.get(`/food/${id}`);
         setFormData(response.data.data); // Pre-fill the form with existing data
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch food details. Please try again.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch food details. Please try again.');
         console.error('Error fetching food:', err);
       }
     };
@@ -36,9 +36,9 @@ const UpdateFood = () => {
     const fetchRestaurants = async () => {
       try {
         const response = await API.get('/restaurant?page=1&limit=10');
-        setRestaurants(response.data.data);
+        setRestaurants(response.data.data.restaurants);
       } catch (err) {
-        setError(err.response?.data?.messages[0] || 'Failed to fetch restaurants. Please try again later.');
+        setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to fetch restaurants. Please try again later.');
         console.error('Error fetching restaurants:', err);
       }
     };
@@ -67,7 +67,7 @@ const UpdateFood = () => {
         navigate('/food'); // Redirect to the food page after successful update
       }
     } catch (err) {
-      setError(err.response?.data?.messages[0] || 'Failed to update food item. Please try again.');
+      setError(Array.isArray(err.response?.data?.messages) ? err.response?.data?.messages[0] : 'Failed to update food item. Please try again.');
       console.error('Error updating food item:', err);
     } finally {
       setLoading(false);

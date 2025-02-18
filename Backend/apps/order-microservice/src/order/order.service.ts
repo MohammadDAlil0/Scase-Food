@@ -1,6 +1,7 @@
 import { StatusOfOrder, Status } from "@app/common/constants";
 import { DataBaseService } from "@app/common/database";
 import { CreateOrderDto, GetOrdersOfContributionDto, AddFoodDto } from "@app/common/dto/orderDtos";
+import { FindMyOrdersDto } from "@app/common/dto/orderDtos/find-my-orders.dto";
 import { Food, FoodOrder, Order, User } from "@app/common/models";
 import { Injectable, Inject } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
@@ -58,7 +59,7 @@ export class OrderService {
     if (order.statusOfOrder !== StatusOfOrder.UNPAIED) {
       this.natsClient.emit({ cmd: 'createNotification' }, {
         userId: order.createdBy,
-        title: 'Thank you for your money',
+        title: 'Thank You For Your Money',
         description: "I got your money, Don't be sad. Your stomack is more important than your money. 😁"
       });
     }
@@ -66,10 +67,12 @@ export class OrderService {
     return order;
   }
 
-  async getMyOrders(userId: string) {
+  async getMyOrders(findMyOrdersDto: FindMyOrdersDto) {
+    const limit = findMyOrdersDto.limit || undefined;
+    const offset = (findMyOrdersDto.page - 1) * limit || undefined;
     const orders = await this.OrderModel.findAll<Order>({
       where: {
-        createdBy: userId,
+        createdBy: findMyOrdersDto.userId,
       },
       include: [
         {
@@ -80,9 +83,16 @@ export class OrderService {
           model: Food,
           as: 'foods'
         }
-      ]
+      ],
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset
     });
-    return orders;
+    const noOrders = await this.OrderModel.count({ where: { createdBy: findMyOrdersDto.userId } });
+    return {
+      orders,
+      totalOrders: noOrders
+    };
   }
 
   async getOrdersOfContribution(getOrdersOfContributionDto: GetOrdersOfContributionDto) {

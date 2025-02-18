@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { OrderService } from './order.service';
 import { AddFoodDto, CreateOrderDto, GetOrdersOfContributionDto } from '@app/common/dto/orderDtos';
+import { FindMyOrdersDto } from '@app/common/dto/orderDtos/find-my-orders.dto';
 
 @Controller()
 export class OrderController {
@@ -22,8 +23,8 @@ export class OrderController {
 
 
   @MessagePattern({ cmd: 'getMyOrders' })
-  getMyOrders(@Payload() userId: string) {
-    return this.orderService.getMyOrders(userId);
+  getMyOrders(@Payload() findMyOrdersDto: FindMyOrdersDto) {
+    return this.orderService.getMyOrders(findMyOrdersDto);
   }
 
   @MessagePattern({ cmd: 'getOrdersOfContribution' })
